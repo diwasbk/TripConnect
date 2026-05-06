@@ -22,12 +22,12 @@ export const signupSchema = z.object({
     confirmPassword: z
         .string("Confirm password is required.")
         .nonempty("Confirm password is required."),
+    role: z
+        .enum(["user", "admin"])
+        .default("user"),
     termsAgreed: z
         .boolean("You must agree to the rules and regulations.")
         .refine((val) => val === true, "You must agree to the rules and regulations."),
-    role: z
-        .enum(["user", "admin"])
-        .default("user")
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Password do not match",
     path: ["confirmPassword"]
