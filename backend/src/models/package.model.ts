@@ -77,4 +77,4 @@ export interface IPackage extends packageType, Document {
     updatedAt: Date;
 };
 
-export const packageModel = mongoose.model<IPackage>("Package", packageSchema);
+export const PackageModel = mongoose.model<IPackage>("Package", packageSchema);
