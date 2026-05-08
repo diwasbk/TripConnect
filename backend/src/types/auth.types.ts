@@ -34,7 +34,6 @@ export const signupSchema = z.object({
 });
 export type signupType = z.infer<typeof signupSchema>;
 
-
 // Login Schema
 export const loginSchema = z.object({
     email: z
