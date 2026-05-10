@@ -92,6 +92,60 @@ class AuthController {
             });
         };
     };
+
+    // Change Password
+    changePassword = async (req: Request, res: Response) => {
+        try {
+            const { currentPassword, newPassword } = req.body;
+
+            const user = req.user as { id: string };
+
+            const userExist = await UserModel.findOne({ _id: user.id });
+
+            if (!userExist) {
+                return res.status(404).send({
+                    message: "User not found!",
+                    success: false
+                });
+            };
+
+            const isPasswordMatch = await bcrypt.compare(currentPassword, userExist.password);
+
+            if (!isPasswordMatch) {
+                return res.status(401).send({
+                    message: "Current password do not match!",
+                    success: false
+                });
+            };
+
+            const salt = await bcrypt.genSalt(10);
+
+            const hash = await bcrypt.hash(newPassword, salt);
+
+            await UserModel.findOneAndUpdate(
+                { _id: user.id },
+                { $set: { password: hash } }
+            );
+
+            res.clearCookie("auth_token", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict"
+            });
+
+            res.status(200).send({
+                message: "Password changed successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default AuthController;
