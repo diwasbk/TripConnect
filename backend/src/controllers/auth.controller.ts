@@ -231,6 +231,51 @@ class AuthController {
             });
         };
     };
+
+    // Delete User Account
+    deleteUserAccount = async (req: Request, res: Response) => {
+        try {
+            const user = req.user as { id: string, role: string };
+
+            const userExist = await UserModel.findOne({ _id: user.id });
+
+            if (!userExist) {
+                return res.status(404).send({
+                    message: "User not found!",
+                    success: false
+                });
+            };
+
+            const isPasswordMatch = await bcrypt.compare(req.body.password, userExist.password)
+
+            if (!isPasswordMatch) {
+                return res.status(401).send({
+                    message: "Password do not match!",
+                    success: false
+                });
+            };
+
+            await UserModel.findOneAndDelete({ _id: user.id });
+
+            res.clearCookie("auth_token", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict"
+            });
+
+            res.status(200).send({
+                message: "User account deleted successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default AuthController;
