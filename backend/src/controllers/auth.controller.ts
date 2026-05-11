@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import { UserModel } from "../models/user.model";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/jwt";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { CLIENT_URL, JWT_SECRET_KEY } from "../config/config";
+import { sendEmail } from "../services/email";
+import { generatePasswordResetEmail, generatePasswordUpdatedEmail } from "../templates/email.templates";
 
 class AuthController {
     // Signup User
@@ -142,6 +146,87 @@ class AuthController {
             console.log(err);
             res.status(500).send({
                 message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
+
+    // Request Password Reset Email
+    requestPasswordResetEmail = async (req: Request, res: Response) => {
+        try {
+            const userExist = await UserModel.findOne({ email: req.body.email });
+
+            if (!userExist) {
+                return res.status(404).send({
+                    message: "Something went wrong! Please try again later!",
+                    success: false
+                });
+            };
+
+            const token = await jwt.sign({ email: userExist.email }, JWT_SECRET_KEY, { expiresIn: "5m" })
+
+            const resetUrl = `${CLIENT_URL}/reset-password?token=${token}`;
+
+            await sendEmail(userExist.email, "Reset Your Password", generatePasswordResetEmail(userExist, resetUrl));
+
+            res.status(200).send({
+                message: "Password reset email send successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.response.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
+
+    // Reset Account Password
+    resetAccountPassword = async (req: Request, res: Response) => {
+        try {
+            const { token, newPassword } = req.body;
+
+            let decoded;
+
+            try {
+                decoded = jwt.verify(token, JWT_SECRET_KEY) as JwtPayload
+
+            } catch (err: any) {
+                return res.status(400).send({
+                    message: "Invalid or expired token!",
+                    success: false
+                });
+            };
+
+            const salt = await bcrypt.genSalt(10);
+
+            const hash = await bcrypt.hash(newPassword, salt);
+
+            const userExist = await UserModel.findOneAndUpdate(
+                { email: decoded.email },
+                { $set: { password: hash } }
+            );
+
+            if (!userExist) {
+                return res.status(404).send({
+                    message: "User not found!",
+                    success: false
+                });
+            };
+
+            await sendEmail(userExist.email, "Your password has been changed", generatePasswordUpdatedEmail(userExist));
+
+            res.status(200).send({
+                message: "Your password changed successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.response.message ? `Internal server error: ${err.message}` : "Internal server error.",
                 success: false
             });
         };
