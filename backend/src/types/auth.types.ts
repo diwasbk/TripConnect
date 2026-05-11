@@ -58,14 +58,14 @@ export const changePasswordSchema = z.object({
 });
 
 
-/* Send Password Reset Email Schema */
-export const sendPasswordResetEmailSchema = z.object({
+/* Request Password Reset Email Schema */
+export const requestPasswordResetEmailSchema = z.object({
     email: z.string("Email is required.").nonempty("Email is required.").email({ message: "Please enter a valid email address." })
 });
-export type sendPasswordResetEmaiType = z.infer<typeof sendPasswordResetEmailSchema>;
+export type sendPasswordResetEmaiType = z.infer<typeof requestPasswordResetEmailSchema>;
 
 
-/* Resert Passsword Schema */
+/* Reset Passsword Schema */
 export const resetPasswordSchema = z.object({
     token: z.string("Token is required.").nonempty("Token is required."),
     newPassword: z.string("New password is required.").nonempty("New password is required.").min(6, "New password must be at least 6 characters."),
