@@ -62,6 +62,29 @@ class PackageController {
             });;
         };
     };
+
+    // Get All Live Packages
+    getAllLivePackages = async (req: Request, res: Response) => {
+        try {
+            const result = await PackageModel.find({
+                status: "published",
+                isActive: true
+            });
+            
+            res.status(200).send({
+                message: result.length ? "Packaged fetched successfully!" : "No Packages!",
+                result: result,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });;
+        };
+    };
 };
 
 export default PackageController;
