@@ -23,11 +23,11 @@ const packageSchema: Schema = new mongoose.Schema<packageType>({
         min: 0,
         required: true
     },
-    photoUrls: [{
+    includes: [{
         type: String,
         required: true
     }],
-    includes: [{
+    photoUrls: [{
         type: String,
         required: true
     }],
@@ -65,10 +65,15 @@ const packageSchema: Schema = new mongoose.Schema<packageType>({
             required: true
         }
     }],
+    status: {
+        type: String,
+        enum: ["draft", "published"],
+        default: "draft"
+    },
     isActive: {
         type: Boolean,
         default: true
-    }
+    },
 }, { timestamps: true });
 
 export interface IPackage extends packageType, Document {

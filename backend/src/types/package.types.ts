@@ -46,29 +46,42 @@ export const packageSchema = z.object({
         .nonempty("Description is required.")
         .min(20, "Description must be at least 20 characters."),
     duration: z
-        .string("Title is required.")
-        .nonempty("Title is required."),
+        .string("Duration is required.")
+        .nonempty("Duration is required."),
     price: z
-        .number("Title is required.")
+        .number("Price is required.")
         .min(0, "Price cannot be negative."),
-    photoUrls: z
-        .array(
-            z.string().url("Invalid photo URL.")
-        )
-        .min(1, "At least one photo is required."),
     includes: z
         .array(
             z.string().min(2, "Include item is too short.")
         )
         .min(1, "At least one include item is required."),
+    photoUrls: z
+        .array(
+            z.string().url("Invalid photo URL.")
+        )
+        .min(1, "At least one photo is required."),
     itinerary: z
         .array(itinerarySchema)
         .default([]),
     departures: z
         .array(departureSchema)
         .default([]),
+    status: z
+        .enum(["draft", "published"])
+        .default("draft"),
     isActive: z
         .boolean()
-        .default(true)
+        .default(true),
 });
 export type packageType = z.infer<typeof packageSchema>;
+
+// Package Basic Info Schema
+export const packageBasicInfoSchema = packageSchema.pick({
+    title: true,
+    intro: true,
+    description: true,
+    duration: true,
+    price: true,
+    includes: true,
+});
