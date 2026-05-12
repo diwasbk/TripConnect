@@ -178,6 +178,97 @@ class PackageController {
             });
         };
     };
+
+    // Update Package Photos By Package ID
+    updatePackagePhotosByPackageID = async (req: Request, res: Response) => {
+        try {
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageID });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            if (!req.file) {
+                return res.status(400).json({
+                    message: "No file uploaded!",
+                    success: false
+                });
+            };
+
+            packageExist.photoUrls.push(req.file.path.replace(/\\/g, "/"));
+
+            await packageExist.save();
+
+            res.status(200).send({
+                message: "Package photos uploaded successfully!",
+                result: packageExist.photoUrls,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
+                success: false
+            });
+        };
+    };
+
+    // Delete Package Photo By Package ID
+    deletePackagePhotoByPackageID = async (req: Request, res: Response) => {
+        try {
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageID });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            const photoUrl = req.body.photoUrl;
+
+            if (!photoUrl) {
+                return res.status(400).send({
+                    message: "Photo URL is required!",
+                    success: false
+                });
+            };
+
+            const photoExists = packageExist.photoUrls.includes(photoUrl);
+
+            if (!photoExists) {
+                return res.status(404).send({
+                    message: "Photo not found in package!",
+                    success: false
+                });
+            }
+
+            packageExist.photoUrls = packageExist.photoUrls.filter((photo: string) =>
+                photo !== photoUrl
+            );
+
+            await packageExist.save();
+
+            res.status(200).send({
+                message: "Package photo deleted successfully!",
+                result: packageExist.photoUrls,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message
+                    ? `Internal server error: ${err.message}`
+                    : "Internal server error!",
+                success: false
+            });
+        };
+    };
 };
 
 export default PackageController;
