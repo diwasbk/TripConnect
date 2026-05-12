@@ -85,6 +85,64 @@ class PackageController {
             });;
         };
     };
+
+    // Get Single Package By ID
+    getSinglePackageById = async (req: Request, res: Response) => {
+        try {
+
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageID });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            res.status(200).send({
+                message: "Package fetched successfully!",
+                result: packageExist,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
+
+    // Delete Single Package By ID
+    deleteSinglePackageById = async (req: Request, res: Response) => {
+        try {
+
+            const packageExist = await PackageModel.findOne({ patientId: req.params.patientId });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            await PackageModel.findOneAndDelete({ _id: req.params.packageID });
+
+            res.status(200).send({
+                message: "Package deleted successfully!",
+                result: packageExist,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default PackageController;
