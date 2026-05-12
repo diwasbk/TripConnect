@@ -143,6 +143,41 @@ class PackageController {
             });
         };
     };
+
+    // Update Package Basic Info By ID
+    updatePackageBasicInfoByID = async (req: Request, res: Response) => {
+        try {
+            const { ...data } = req.body;
+
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageID });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            const result = await PackageModel.findOneAndUpdate(
+                { _id: req.params.packageID },
+                { $set: data },
+                { new: true }
+            );
+
+            res.status(200).send({
+                message: "Package updated successfully!",
+                result: result,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
+                success: false
+            });
+        };
+    };
 };
 
 export default PackageController;
