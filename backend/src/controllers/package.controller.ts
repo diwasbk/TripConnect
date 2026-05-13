@@ -504,6 +504,74 @@ class PackageController {
             });
         };
     };
+
+    // Update Package Departure By Departure ID
+    updatePackageDepartureByDepartureId = async (req: Request, res: Response) => {
+        try {
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            const departureExist = packageExist.departures.find((departure: any) => {
+                return departure._id == req.params.departureId
+            });
+
+            if (!departureExist) {
+                return res.status(404).send({
+                    message: "Departure not found!",
+                    success: false
+                });
+            };
+
+            const { date, totalSeats, availableSeats } = req.body;
+
+            // Update the matched departure entry in place.
+            const updatedPackage = await PackageModel.findOneAndUpdate(
+                {
+                    _id: req.params.packageId,
+                    "departures._id": req.params.departureId
+                },
+                {
+                    $set: {
+                        "departures.$.date": date,
+                        "departures.$.totalSeats": totalSeats,
+                        "departures.$.availableSeats": availableSeats
+                    }
+                },
+                { new: true }
+            );
+
+            if (!updatedPackage) {
+                return res.status(404).send({
+                    message: "Failed to update departure.",
+                    success: false
+                });
+            };
+
+            // Get updated departure only
+            const updatedPackageDeparture = updatedPackage.departures.find((departure: any) => {
+                return departure._id == req.params.departureId
+            });
+
+            res.status(200).send({
+                message: "Departure updated successfully!",
+                result: updatedPackageDeparture,
+                success: true
+            })
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default PackageController;

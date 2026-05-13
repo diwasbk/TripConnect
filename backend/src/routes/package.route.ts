@@ -23,5 +23,6 @@ packageRouter.delete("/itinerary/delete/:packageId/:itineraryId", packageControl
 
 packageRouter.put("/departure/add/:packageId", schemaValidateMiddleware(departureSchema), packageController.addPackageDepartureByPackageId);
 packageRouter.get("/departure/:packageId", packageController.getPackageDepartureByPackageId);
+packageRouter.put("/departure/update/:packageId/:departureId", schemaValidateMiddleware(departureSchema.partial()), packageController.updatePackageDepartureByDepartureId);
 
 export default packageRouter;
