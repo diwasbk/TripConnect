@@ -440,6 +440,70 @@ class PackageController {
             });
         };
     };
+
+    // Add Package Departure By Package ID
+    addPackageDepartureByPackageId = async (req: Request, res: Response) => {
+        try {
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            const { ...data } = req.body;
+
+            packageExist.departures.push(data);
+
+            await packageExist.save();
+
+            // Get the newly added departure (last element)
+            const addedDeparture = packageExist.departures[packageExist.departures.length - 1];
+
+            res.status(200).send({
+                message: "Package departure added successfully!",
+                result: addedDeparture,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
+                success: false
+            });
+        };
+    };
+
+    // Get Package Departure By Package ID
+    getPackageDepartureByPackageId = async (req: Request, res: Response) => {
+        try {
+
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            res.status(200).send({
+                message: packageExist.departures.length ? "Package departures fetched successfully!" : "Package departured not found!",
+                result: packageExist.departures,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default PackageController;
