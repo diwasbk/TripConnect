@@ -2,12 +2,12 @@ import { Request, Response } from "express";
 import { PackageModel } from "../models/package.model";
 
 class PackageController {
-    // Create Basic Package Info
+    // Create Package Basic Info
     createPackageBasicInfo = async (req: Request, res: Response) => {
         try {
             const { title, intro, description, duration, price, includes } = req.body;
 
-            const result = await PackageModel.create({
+            await PackageModel.create({
                 title: title,
                 intro: intro,
                 description: description,
@@ -21,7 +21,6 @@ class PackageController {
 
             res.status(201).send({
                 message: "Package created successfully!",
-                result,
                 success: true
             });
 
@@ -70,7 +69,7 @@ class PackageController {
                 status: "published",
                 isActive: true
             });
-            
+
             res.status(200).send({
                 message: result.length ? "Packaged fetched successfully!" : "No Packages!",
                 result: result,
@@ -89,8 +88,7 @@ class PackageController {
     // Get Single Package By ID
     getSinglePackageById = async (req: Request, res: Response) => {
         try {
-
-            const packageExist = await PackageModel.findOne({ _id: req.params.packageID });
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
             if (!packageExist) {
                 return res.status(404).send({
@@ -117,8 +115,7 @@ class PackageController {
     // Delete Single Package By ID
     deleteSinglePackageById = async (req: Request, res: Response) => {
         try {
-
-            const packageExist = await PackageModel.findOne({ patientId: req.params.patientId });
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
             if (!packageExist) {
                 return res.status(404).send({
@@ -127,11 +124,10 @@ class PackageController {
                 });
             };
 
-            await PackageModel.findOneAndDelete({ _id: req.params.packageID });
+            await PackageModel.findOneAndDelete({ _id: req.params.packageId });
 
             res.status(200).send({
                 message: "Package deleted successfully!",
-                result: packageExist,
                 success: true
             });
 
@@ -145,11 +141,11 @@ class PackageController {
     };
 
     // Update Package Basic Info By ID
-    updatePackageBasicInfoByID = async (req: Request, res: Response) => {
+    updatePackageBasicInfoById = async (req: Request, res: Response) => {
         try {
             const { ...data } = req.body;
 
-            const packageExist = await PackageModel.findOne({ _id: req.params.packageID });
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
             if (!packageExist) {
                 return res.status(404).send({
@@ -158,15 +154,13 @@ class PackageController {
                 });
             };
 
-            const result = await PackageModel.findOneAndUpdate(
-                { _id: req.params.packageID },
-                { $set: data },
-                { new: true }
+            await PackageModel.findOneAndUpdate(
+                { _id: req.params.packageId },
+                { $set: data }
             );
 
             res.status(200).send({
                 message: "Package updated successfully!",
-                result: result,
                 success: true
             });
 
@@ -180,9 +174,9 @@ class PackageController {
     };
 
     // Update Package Photos By Package ID
-    updatePackagePhotosByPackageID = async (req: Request, res: Response) => {
+    updatePackagePhotosByPackageId = async (req: Request, res: Response) => {
         try {
-            const packageExist = await PackageModel.findOne({ _id: req.params.packageID });
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
             if (!packageExist) {
                 return res.status(404).send({
@@ -218,9 +212,9 @@ class PackageController {
     };
 
     // Delete Package Photo By Package ID
-    deletePackagePhotoByPackageID = async (req: Request, res: Response) => {
+    deletePackagePhotoByPackageId = async (req: Request, res: Response) => {
         try {
-            const packageExist = await PackageModel.findOne({ _id: req.params.packageID });
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
             if (!packageExist) {
                 return res.status(404).send({
@@ -245,7 +239,7 @@ class PackageController {
                     message: "Photo not found in package!",
                     success: false
                 });
-            }
+            };
 
             packageExist.photoUrls = packageExist.photoUrls.filter((photo: string) =>
                 photo !== photoUrl
@@ -255,16 +249,49 @@ class PackageController {
 
             res.status(200).send({
                 message: "Package photo deleted successfully!",
-                result: packageExist.photoUrls,
                 success: true
             });
 
         } catch (err: any) {
             console.log(err);
             res.status(500).send({
-                message: err.message
-                    ? `Internal server error: ${err.message}`
-                    : "Internal server error!",
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
+                success: false
+            });
+        };
+    };
+
+    // Add Package Itinerary By Package ID
+    addPackageItineraryByPackageId = async (req: Request, res: Response) => {
+        try {
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            const { ...data } = req.body;
+
+            packageExist.itinerary.push(data);
+
+            await packageExist.save();
+
+            // Get the newly added itinerary (last element)
+            const addedItinerary = packageExist.itinerary[packageExist.itinerary.length - 1];
+
+            res.status(200).send({
+                message: "Package itinerary added successfully!",
+                result: addedItinerary,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
                 success: false
             });
         };

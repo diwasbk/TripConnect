@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Serve uploaded files
-app.use("/api/uploads", express.static("uploads"))
+app.use("/api/uploads/packages", express.static("uploads/packages"))
 
 app.use("/api/auth", authRouter);
 app.use("/api/package", packageRouter);

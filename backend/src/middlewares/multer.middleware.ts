@@ -4,7 +4,7 @@ import multer from "multer";
 // Multer storage configuration
 const storage = multer.diskStorage({
     destination: function (req: Request, file, cb) {
-        cb(null, "uploads");
+        cb(null, "uploads/packages");
     },
     filename: function (req: Request, file, cb) {
         cb(null, Date.now() + "_" + file.originalname);
