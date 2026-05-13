@@ -27,5 +27,6 @@ packageRouter.put("/departure/update/:packageId/:departureId", schemaValidateMid
 packageRouter.delete("/departure/delete/:packageId/:departureId", packageController.deleteDepartureByDepartureId);
 
 packageRouter.patch("/publish/:packageId", packageController.publishPackageByPackageID);
+packageRouter.patch("/activate-deactivate/:packageId/:active", packageController.activateORdeactivatePackagebyId);
 
 export default packageRouter;

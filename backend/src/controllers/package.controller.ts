@@ -650,6 +650,53 @@ class PackageController {
             });
         };
     };
+
+    // Activate or Deactivate Package By ID
+    activateORdeactivatePackagebyId = async (req: Request, res: Response) => {
+        try {
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            let message: string;
+            let isActive: boolean;
+
+            if (req.params.active == "true") {
+                message = "activated";
+                isActive = true;
+            } else if (req.params.active == "false") {
+                message = "deactivated";
+                isActive = false;
+            } else {
+                return res.status(400).send({
+                    message: "Invalid value! Use true or false.",
+                    success: false
+                });
+            };
+
+            await PackageModel.findOneAndUpdate(
+                { _id: req.params.packageId },
+                { $set: { isActive: isActive } }
+            );
+
+            res.status(200).send({
+                message: `Package ${message} successfully!`,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default PackageController;
