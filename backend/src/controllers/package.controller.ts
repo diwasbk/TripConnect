@@ -296,6 +296,34 @@ class PackageController {
             });
         };
     };
+
+    // Get Package Itinerary By Package ID
+    getPackageItineraryByPackageId = async (req: Request, res: Response) => {
+        try {
+
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            res.status(200).send({
+                message: packageExist.itinerary.length ? "Package itinerary fetched successfully!" : "Package itinerary not found!",
+                result: packageExist.itinerary,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default PackageController;
