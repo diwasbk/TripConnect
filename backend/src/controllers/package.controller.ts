@@ -572,6 +572,53 @@ class PackageController {
             });
         };
     };
+
+    // Delete Departure By Departure ID
+    deleteDepartureByDepartureId = async (req: Request, res: Response) => {
+        try {
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            const departureExist = packageExist.departures.find((departure: any) => {
+                return departure._id == req.params.departureId
+            });
+
+            if (!departureExist) {
+                return res.status(404).send({
+                    message: "Departure not found!",
+                    success: false
+                });
+            };
+
+            // Get the index of the departure to delete
+            const departureIndex = packageExist.departures.findIndex((departure: any) => {
+                return departure._id == req.params.departureId;
+            });
+
+            // Remove the departure from the array
+            packageExist.departures.splice(departureIndex, 1);
+
+            await packageExist.save();
+
+            res.status(200).send({
+                message: "Departure deleted successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default PackageController;
