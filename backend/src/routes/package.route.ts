@@ -26,4 +26,6 @@ packageRouter.get("/departure/:packageId", packageController.getPackageDeparture
 packageRouter.put("/departure/update/:packageId/:departureId", schemaValidateMiddleware(departureSchema.partial()), packageController.updatePackageDepartureByDepartureId);
 packageRouter.delete("/departure/delete/:packageId/:departureId", packageController.deleteDepartureByDepartureId);
 
+packageRouter.patch("/publish/:packageId", packageController.publishPackageByPackageID);
+
 export default packageRouter;
