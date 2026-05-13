@@ -324,6 +324,122 @@ class PackageController {
             });
         };
     };
+
+    // Update Package Itinerary By Itinerary ID
+    updatePackageItineraryByItineraryId = async (req: Request, res: Response) => {
+        try {
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            const itineraryExist = packageExist.itinerary.find((itinerary: any) => {
+                return itinerary._id == req.params.itineraryId
+            });
+
+            if (!itineraryExist) {
+                return res.status(404).send({
+                    message: "Itinerary not found!",
+                    success: false
+                });
+            };
+
+            const { day, title, description, activities } = req.body;
+
+            // Update itinerary using positional operator
+            const updatedPackage = await PackageModel.findOneAndUpdate(
+                {
+                    _id: req.params.packageId,
+                    "itinerary._id": req.params.itineraryId
+                },
+                {
+                    $set: {
+                        "itinerary.$.day": day,
+                        "itinerary.$.title": title,
+                        "itinerary.$.description": description,
+                        "itinerary.$.activities": activities
+                    }
+                },
+                { new: true }
+            );
+
+            if (!updatedPackage) {
+                return res.status(404).send({
+                    message: "Failed to update itinerary.",
+                    success: false
+                });
+            };
+
+            // Get updated itinerary only
+            const updatedPackageItinerary = updatedPackage.itinerary.find((itinerary: any) => {
+                return itinerary._id == req.params.itineraryId
+            });
+
+            res.status(200).send({
+                message: "Itinerary updated successfully!",
+                result: updatedPackageItinerary,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
+
+    // Delete Itinerary By Itinerary ID
+    deleteItineraryByItineraryId = async (req: Request, res: Response) => {
+        try {
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            const itineraryExist = packageExist.itinerary.find((itinerary: any) => {
+                return itinerary._id == req.params.itineraryId
+            });
+
+            if (!itineraryExist) {
+                return res.status(404).send({
+                    message: "Itinerary not found!",
+                    success: false
+                });
+            };
+
+            // Get the index of the itinerary to delete
+            const itineraryIndex = packageExist.itinerary.findIndex((itinerary: any) => {
+                return itinerary._id == req.params.itineraryId;
+            });
+
+            // Remove the itinerary from the array
+            packageExist.itinerary.splice(itineraryIndex, 1);
+
+            await packageExist.save();
+
+            res.status(200).send({
+                message: "Itinerary deleted successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default PackageController;

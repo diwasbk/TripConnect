@@ -18,5 +18,7 @@ packageRouter.delete("/delete/:packageId", packageController.deleteSinglePackage
 
 packageRouter.put("/itinerary/add/:packageId", schemaValidateMiddleware(itinerarySchema), packageController.addPackageItineraryByPackageId);
 packageRouter.get("/itinerary/:packageId", packageController.getPackageItineraryByPackageId);
+packageRouter.put("/itinerary/update/:packageId/:itineraryId", schemaValidateMiddleware(itinerarySchema.partial()), packageController.updatePackageItineraryByItineraryId);
+packageRouter.delete("/itinerary/delete/:packageId/:itineraryId", packageController.deleteItineraryByItineraryId);
 
 export default packageRouter;
