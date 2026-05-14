@@ -11,5 +11,7 @@ bookingRouter.post("/guest-user/:packageId", schemaValidateMiddleware(bookingSch
 bookingRouter.post("/registered-user/:packageId", jwtAuthMiddleware, schemaValidateMiddleware(bookingSchema.pick({ travelDate: true, noOfTravellers: true })), bookingController.bookPackageForRegisteredUserByPackageId);
 bookingRouter.get("/all", bookingController.getAllBookingsByStatus);
 bookingRouter.get("/:bookingId", bookingController.getBookingByBookingId);
+bookingRouter.get("/by-package-id/:packageId", bookingController.getAllBookingsByPackageId);
+bookingRouter.get("/by-user-id/:userId", bookingController.getAllBookingsByUserId);
 
 export default bookingRouter;

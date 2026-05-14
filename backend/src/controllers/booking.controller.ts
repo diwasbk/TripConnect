@@ -213,6 +213,63 @@ class BookingController {
             });
         };
     };
+
+    // Get All Booking By Package ID
+    getAllBookingsByPackageId = async (req: Request, res: Response) => {
+        try {
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            };
+
+            const result = await BookingModel.find({ packageId: req.params.packageId });
+
+            res.status(200).send({
+                message: result.length ? "Bookings fetched successfully!" : "Bookings not found!",
+                result: result,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    }
+    // Get All Bookings By User Id
+    getAllBookingsByUserId = async (req: Request, res: Response) => {
+        try {
+            const userExist = await UserModel.findOne({ _id: req.params.userId });
+
+            if (!userExist) {
+                return res.status(404).send({
+                    message: "User not found!",
+                    success: false
+                });
+            };
+
+            const result = await BookingModel.find({ userId: req.params.userId });
+
+            res.status(200).send({
+                message: result.length ? "Bookings fetched successfully!" : "Bookings not found!",
+                result: result,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default BookingController;
