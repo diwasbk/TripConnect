@@ -15,5 +15,6 @@ bookingRouter.get("/by-package-id/:packageId", bookingController.getAllBookingsB
 bookingRouter.get("/by-user-id/:userId", bookingController.getAllBookingsByUserId);
 bookingRouter.put("/update-details/:bookingId", schemaValidateMiddleware(bookingSchema.partial()), bookingController.updateBookingDetailsByBookingId);
 bookingRouter.patch("/update-status/:bookingId/:status", bookingController.updateBookingStatusByBookingId);
+bookingRouter.delete("/delete/:bookingId", bookingController.deleteBookingByBookingId);
 
 export default bookingRouter;
