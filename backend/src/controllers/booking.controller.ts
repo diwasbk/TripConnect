@@ -139,6 +139,53 @@ class BookingController {
             });
         };
     };
+
+    // Get All Bookings By Status
+    getAllBookingsByStatus = async (req: Request, res: Response) => {
+        try {
+            const status = req.query.status as | "pending" | "confirmed" | "in-progress" | "completed" | "cancelled" | undefined;
+
+            type BookingStatus = (typeof bookingStatuses)[number];
+
+            if (typeof status !== "string" || !bookingStatuses.includes(status as BookingStatus)) {
+                return res.status(400).send({
+                    message: "Invalid booking status!",
+                    success: false,
+                });
+            }
+
+            let isGuest: boolean;
+
+            if (req.query.isGuest == "true") {
+                isGuest = true;
+            } else if (req.query.isGuest == "false") {
+                isGuest = false;
+            } else {
+                return res.status(400).send({
+                    message: "Invalid guest value! Use true or false.",
+                    success: false
+                });
+            };
+
+            const result = await BookingModel.find({
+                status: status,
+                isGuest: isGuest
+            });
+
+            res.status(200).send({
+                message: result.length ? "Bookings fetched successfully!" : "Booking not found!",
+                result: result,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
+                success: false
+            });
+        };
+    };
 };
 
 export default BookingController;

@@ -9,5 +9,6 @@ const bookingController = new BookingController();
 
 bookingRouter.post("/guest-user/:packageId", schemaValidateMiddleware(bookingSchema), bookingController.bookPackageForGuestUserByPackageId);
 bookingRouter.post("/registered-user/:packageId", jwtAuthMiddleware, schemaValidateMiddleware(bookingSchema.pick({ travelDate: true, noOfTravellers: true })), bookingController.bookPackageForRegisteredUserByPackageId);
+bookingRouter.get("/all", bookingController.getAllBookingsByStatus);
 
 export default bookingRouter;
