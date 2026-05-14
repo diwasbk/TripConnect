@@ -270,6 +270,80 @@ class BookingController {
             });
         };
     };
+
+    // Update Booking Details By Booking ID
+    updateBookingDetailsByBookingId = async (req: Request, res: Response) => {
+        try {
+            const bookingExist = await BookingModel.findOne({ _id: req.params.bookingId });
+
+            if (!bookingExist) {
+                return res.status(404).send({
+                    message: "Booking not found!",
+                    success: false
+                });
+            };
+
+            const { fullName, email, phoneNumber, travelDate, specialRequest } = req.body;
+
+            await BookingModel.findOneAndUpdate(
+                { _id: req.params.bookingId },
+                { $set: { fullName: fullName, email: email, phoneNumber, travelDate, specialRequest } }
+            );
+
+            res.status(200).send({
+                message: "Bookings details updated successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
+
+    // Update Booking's Travel Status By Booking ID
+    updateBookingStatusByBookingId = async (req: Request, res: Response) => {
+        try {
+            const bookingExist = await BookingModel.findOne({ _id: req.params.bookingId });
+
+            if (!bookingExist) {
+                return res.status(404).send({
+                    message: "Booking not found!",
+                    success: false
+                });
+            };
+
+            const status = req.params.status;
+
+            if (!bookingStatuses.includes(status as typeof bookingStatuses[number])) {
+                return res.status(400).send({
+                    message: "Invalid booking status!",
+                    success: false
+                });
+            };
+
+            const result = await BookingModel.findOneAndUpdate(
+                { _id: req.params.bookingId },
+                { $set: { status } },
+                { new: true }
+            );
+
+            res.status(200).send({
+                message: `Booking status updated successfully to ${result?.status}!`,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default BookingController;

@@ -13,5 +13,7 @@ bookingRouter.get("/all", bookingController.getAllBookingsByStatus);
 bookingRouter.get("/:bookingId", bookingController.getBookingByBookingId);
 bookingRouter.get("/by-package-id/:packageId", bookingController.getAllBookingsByPackageId);
 bookingRouter.get("/by-user-id/:userId", bookingController.getAllBookingsByUserId);
+bookingRouter.put("/update-details/:bookingId", schemaValidateMiddleware(bookingSchema.partial()), bookingController.updateBookingDetailsByBookingId);
+bookingRouter.patch("/update-status/:bookingId/:status", bookingController.updateBookingStatusByBookingId);
 
 export default bookingRouter;
