@@ -186,6 +186,33 @@ class BookingController {
             });
         };
     };
+
+    // Get Booking By Booking Id
+    getBookingByBookingId = async (req: Request, res: Response) => {
+        try {
+            const bookingExist = await BookingModel.findOne({ _id: req.params.bookingId });
+
+            if (!bookingExist) {
+                return res.status(404).send({
+                    message: "Booking not found!",
+                    success: false
+                });
+            };
+
+            res.status(200).send({
+                message: "Booking fetched successfully!",
+                result: bookingExist,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default BookingController;
