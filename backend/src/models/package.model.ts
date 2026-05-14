@@ -23,52 +23,67 @@ const packageSchema: Schema = new mongoose.Schema<packageType>({
         min: 0,
         required: true
     },
-    photoUrls: [{
-        type: String,
-        required: true
-    }],
-    includes: [{
-        type: String,
-        required: true
-    }],
-    itinerary: [{
-        day: {
-            type: Number,
-            required: true
-        },
-        title: {
+    includes: [
+        {
             type: String,
-            required: true
-        },
-        description: {
-            type: String,
-            required: true
-        },
-        activities: [{
-            type: String,
-            required: true
-        }]
-    }],
-    departures: [{
-        date: {
-            type: Date,
-            required: true
-        },
-        totalSeats: {
-            type: Number,
-            min: 1,
-            required: true
-        },
-        availableSeats: {
-            type: Number,
-            min: 0,
             required: true
         }
-    }],
+    ],
+    photoUrls: [
+        {
+            type: String,
+            required: true
+        }
+    ],
+    itinerary: [
+        {
+            day: {
+                type: Number,
+                required: true
+            },
+            title: {
+                type: String,
+                required: true
+            },
+            description: {
+                type: String,
+                required: true
+            },
+            activities: [
+                {
+                    type: String,
+                    required: true
+                }
+            ]
+        }
+    ],
+    departures: [
+        {
+            date: {
+                type: Date,
+                required: true
+            },
+            totalSeats: {
+                type: Number,
+                min: 1,
+                required: true
+            },
+            availableSeats: {
+                type: Number,
+                min: 0,
+                required: true
+            }
+        }
+    ],
+    status: {
+        type: String,
+        enum: ["draft", "published"],
+        default: "draft"
+    },
     isActive: {
         type: Boolean,
         default: true
-    }
+    },
 }, { timestamps: true });
 
 export interface IPackage extends packageType, Document {

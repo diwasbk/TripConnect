@@ -7,7 +7,8 @@ export const bookingSchema = z.object({
         .instanceof(mongoose.Types.ObjectId)
         .optional(),
     packageId: z
-        .instanceof(mongoose.Types.ObjectId),
+        .instanceof(mongoose.Types.ObjectId)
+        .optional(),
     fullName: z
         .string("Full name is required.")
         .nonempty("Full name is required.")
@@ -25,6 +26,9 @@ export const bookingSchema = z.object({
         .coerce.date("Date is required."),
     noOfTravellers: z
         .number()
+        .min(1, {
+            message: "At least 1 traveller is required."
+        })
         .default(1),
     isGuest: z
         .boolean()
@@ -32,7 +36,7 @@ export const bookingSchema = z.object({
     specialRequest: z
         .string()
         .optional(),
-    travelStatus: z
+    status: z
         .enum(["pending", "confirmed", "in-progress", "completed", "cancelled"])
         .default("pending"),
 });

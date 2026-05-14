@@ -1,0 +1,1 @@
+export const bookingStatuses = ["pending", "confirmed", "in-progress", "completed", "cancelled"] as const;
