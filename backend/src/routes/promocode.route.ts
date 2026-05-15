@@ -10,5 +10,6 @@ promoCodeRouter.post("/create", schemaValidateMiddleware(promoCodeSchema), promo
 promoCodeRouter.get("/all/:isActive", promoCodeController.getAllPromoCodeByStatus);
 promoCodeRouter.get("/:promoCodeId", promoCodeController.getPromoCodeByPromoCodeId);
 promoCodeRouter.put("/update/:promoCodeId", schemaValidateMiddleware(promoCodeSchema.partial()), promoCodeController.updatePromoCodeByPromoCodeId);
+promoCodeRouter.patch("/activate-deactivate/:promoCodeId/:isActive", promoCodeController.activateOrDeactivatePromoCodeByPromoCodeId);
 
 export default promoCodeRouter;

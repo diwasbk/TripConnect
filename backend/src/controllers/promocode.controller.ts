@@ -126,6 +126,53 @@ class PromoCodeController {
             });
         };
     };
+
+    // Activate or Deactivate PromoCode By PromoCode ID
+    activateOrDeactivatePromoCodeByPromoCodeId = async (req: Request, res: Response) => {
+        try {
+            const promoCodeExist = await PromoCodeModel.findOne({ _id: req.params.promoCodeId });
+
+            if (!promoCodeExist) {
+                res.status(404).send({
+                    message: "PromoCode not found!",
+                    success: false
+                });
+            };
+
+            let message: string;
+            let isActive: boolean;
+
+            if (req.params.isActive == "true") {
+                message = "activated";
+                isActive = true;
+            } else if (req.params.isActive == "false") {
+                message = "deactivated";
+                isActive = false;
+            } else {
+                return res.status(400).send({
+                    message: "Invalid value! Use true or false.",
+                    success: false
+                });
+            };
+
+            await PromoCodeModel.findOneAndUpdate(
+                { _id: req.params.promoCodeId },
+                { $set: { isActive: isActive } }
+            );
+
+            res.status(200).send({
+                message: `PromoCode ${message} successfully!`,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
+                success: true
+            });
+        };
+    };
 };
 
 export default PromoCodeController;
