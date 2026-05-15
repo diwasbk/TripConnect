@@ -173,6 +173,34 @@ class PromoCodeController {
             });
         };
     };
+
+    // Delete PromoCode By PromoCode ID
+    deletePromoCodeByPromoCodeId = async (req: Request, res: Response) => {
+        try {
+            const PromoCodeExist = await PromoCodeModel.findOne({ _id: req.params.promoCodeId });
+
+            if (!PromoCodeExist) {
+                return res.status(404).send({
+                    message: "PromoCode not found!",
+                    success: false
+                });
+            };
+
+            await PromoCodeModel.findOneAndDelete({ _id: req.params.promoCodeId });
+
+            res.status(200).send({
+                message: "PromoCode deleted successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default PromoCodeController;
