@@ -66,6 +66,33 @@ class PromoCodeController {
             });
         };
     };
+
+    // Get PromoCode By PromoCode ID
+    getPromoCodeByPromoCodeId = async (req: Request, res: Response) => {
+        try {
+            const promoCodeExist = await PromoCodeModel.findOne({ _id: req.params.promoCodeId });
+
+            if (!promoCodeExist) {
+                res.status(404).send({
+                    message: "PromoCode not found!",
+                    success: false
+                });
+            };
+
+            res.status(200).send({
+                message: "PromoCode fetched successfully!",
+                result: promoCodeExist,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
+                success: true
+            });
+        };
+    };
 };
 
 export default PromoCodeController;

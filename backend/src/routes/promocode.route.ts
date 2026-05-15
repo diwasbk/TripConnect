@@ -8,5 +8,6 @@ const promoCodeController = new PromoCodeController();
 
 promoCodeRouter.post("/create", schemaValidateMiddleware(promoCodeSchema), promoCodeController.createPromoCode);
 promoCodeRouter.get("/all/:isActive", promoCodeController.getAllPromoCodeByStatus);
+promoCodeRouter.get("/:promoCodeId", promoCodeController.getPromoCodeByPromoCodeId);
 
 export default promoCodeRouter;
