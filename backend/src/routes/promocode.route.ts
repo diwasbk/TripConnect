@@ -7,5 +7,6 @@ const promoCodeRouter = express.Router();
 const promoCodeController = new PromoCodeController();
 
 promoCodeRouter.post("/create", schemaValidateMiddleware(promoCodeSchema), promoCodeController.createPromoCode);
+promoCodeRouter.get("/all/:isActive", promoCodeController.getAllPromoCodeByStatus);
 
 export default promoCodeRouter;
