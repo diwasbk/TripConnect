@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { promocodeType } from "../types/promocode.types";
+import { promoCodeType } from "../types/promocode.types";
 
-const promoCodeSchema: Schema = new mongoose.Schema<promocodeType>({
+const promoCodeSchema: Schema = new mongoose.Schema<promoCodeType>({
     code: {
         type: String,
         required: true,
@@ -26,7 +26,7 @@ const promoCodeSchema: Schema = new mongoose.Schema<promocodeType>({
     }
 }, { timestamps: true });
 
-export interface IPromoCode extends promocodeType, Document {
+export interface IPromoCode extends promoCodeType, Document {
     _id: mongoose.Types.ObjectId,
     createdAt: Date;
     updatedAt: Date;

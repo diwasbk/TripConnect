@@ -666,10 +666,10 @@ class PackageController {
             let message: string;
             let isActive: boolean;
 
-            if (req.params.active == "true") {
+            if (req.params.isActive == "true") {
                 message = "activated";
                 isActive = true;
-            } else if (req.params.active == "false") {
+            } else if (req.params.isActive == "false") {
                 message = "deactivated";
                 isActive = false;
             } else {

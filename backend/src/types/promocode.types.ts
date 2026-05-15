@@ -1,10 +1,12 @@
 import z from "zod";
 
-// Promocode Schema
-export const promocodeSchema = z.object({
+// PromoCode Schema
+export const promoCodeSchema = z.object({
     code: z
         .string("Promocode is required.")
-        .nonempty("Promocode is required."),
+        .nonempty("Promocode is required.")
+        .toUpperCase()
+        .trim(),
     description: z
         .string("Description is required.")
         .nonempty("Description is required.")
@@ -17,6 +19,6 @@ export const promocodeSchema = z.object({
         .coerce.date("Expire Date is required."),
     isActive: z
         .boolean()
-        .default(false),
+        .default(true),
 });
-export type promocodeType = z.infer<typeof promocodeSchema>;
+export type promoCodeType = z.infer<typeof promoCodeSchema>;
