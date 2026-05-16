@@ -6,6 +6,10 @@ const packageSchema: Schema = new mongoose.Schema<packageType>({
         type: String,
         required: true
     },
+    location: {
+        type: String,
+        required: true
+    },
     intro: {
         type: String,
         required: true

@@ -38,6 +38,11 @@ const paymentSchema: Schema = new mongoose.Schema<paymentType>({
         enum: ["cash", "esewa", "khalti", "others"],
         default: "esewa"
     },
+    transactionCode: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
     paymentStatus: {
         type: String,
         enum: ["pending", "completed", "failed"],

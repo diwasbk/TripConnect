@@ -31,6 +31,9 @@ export const paymentSchema = z.object({
     paymentMethod: z
         .enum(["cash", "esewa", "khalti", "others"])
         .default("esewa"),
+    transactionCode: z
+        .string()
+        .optional(),
     paymentStatus: z
         .enum(["pending", "completed", "failed"])
         .default("pending"),

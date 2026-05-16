@@ -5,10 +5,11 @@ class PackageController {
     // Create Package Basic Info
     createPackageBasicInfo = async (req: Request, res: Response) => {
         try {
-            const { title, intro, description, duration, price, includes } = req.body;
+            const { location, title, intro, description, duration, price, includes } = req.body;
 
             await PackageModel.create({
                 title: title,
+                location: location,
                 intro: intro,
                 description: description,
                 duration: duration,
