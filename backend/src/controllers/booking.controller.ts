@@ -3,6 +3,8 @@ import { BookingModel } from "../models/booking.model";
 import { PackageModel } from "../models/package.model";
 import { UserModel } from "../models/user.model";
 import { bookingStatuses } from "../config/constants";
+import { PaymentModel } from "../models/payment.model";
+import { generateBookingReference } from "../utils/helper";
 
 class BookingController {
     // Book Package For Guest User By Package ID
@@ -16,6 +18,8 @@ class BookingController {
                     success: false
                 });
             };
+
+            const bookingReference = await generateBookingReference();
 
             const { fullName, email, phoneNumber, travelDate, noOfTravellers, specialRequest } = req.body;
 
@@ -37,8 +41,9 @@ class BookingController {
                 });
             };
 
-            const result = await BookingModel.create({
+            const booking = await BookingModel.create({
                 packageId: packageExist._id,
+                bookingReference: bookingReference,
                 fullName: fullName,
                 email: email,
                 phoneNumber: phoneNumber,
@@ -51,9 +56,19 @@ class BookingController {
 
             await packageExist.save();
 
+            const finalAmount = noOfTravellers * packageExist.price;
+
+            const payment = await PaymentModel.create({
+                bookingId: booking._id,
+                packageId: packageExist._id,
+                originalAmount: finalAmount,
+                finalAmount: finalAmount
+            });
+
             res.status(201).send({
-                message: "Package book successfully!",
-                result: result,
+                message: "Booking created successfully!",
+                booking: booking,
+                payment: payment,
                 success: true
             });
 
@@ -109,7 +124,7 @@ class BookingController {
                 });
             };
 
-            const result = await BookingModel.create({
+            const booking = await BookingModel.create({
                 userId: user.id,
                 packageId: packageExist._id,
                 fullName: userExist.fullName,
@@ -125,9 +140,19 @@ class BookingController {
 
             await packageExist.save();
 
+            const finalAmount = noOfTravellers * packageExist.price;
+
+            const payment = await PaymentModel.create({
+                bookingId: booking._id,
+                packageId: packageExist._id,
+                originalAmount: finalAmount,
+                finalAmount: finalAmount
+            });
+
             res.status(201).send({
-                message: "Package booked successfully!",
-                result: result,
+                message: "Booking created successfully!",
+                booking: booking,
+                payment: payment,
                 success: true
             });
 
@@ -191,6 +216,33 @@ class BookingController {
     getBookingByBookingId = async (req: Request, res: Response) => {
         try {
             const bookingExist = await BookingModel.findOne({ _id: req.params.bookingId });
+
+            if (!bookingExist) {
+                return res.status(404).send({
+                    message: "Booking not found!",
+                    success: false
+                });
+            };
+
+            res.status(200).send({
+                message: "Booking fetched successfully!",
+                result: bookingExist,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
+
+    // Get Booking By Booking Reference
+    getBookingByBookingReference = async (req: Request, res: Response) => {
+        try {
+            const bookingExist = await BookingModel.findOne({ bookingReference: req.params.bookingReference });
 
             if (!bookingExist) {
                 return res.status(404).send({
