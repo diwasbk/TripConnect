@@ -110,6 +110,45 @@ class PaymentController {
             });
         };
     };
+
+    // Update Payment Status By Payment ID
+    updatePaymentStatusByPaymentId = async (req: Request, res: Response) => {
+        try {
+            const paymentStatus = req.body.paymentStatus as typeof paymentStatuses[number];
+
+            if (!paymentStatuses.includes(paymentStatus)) {
+                return res.status(400).send({
+                    message: `Invalid payment status. Please use: ${paymentStatuses.join(", ")}.`,
+                    success: false
+                });
+            };
+
+            const paymentExist = await PaymentModel.findOne({ _id: req.params.paymentId });
+
+            if (!paymentExist) {
+                return res.status(404).send({
+                    message: "Payment not found!",
+                    success: false
+                });
+            };
+
+            paymentExist.paymentStatus = paymentStatus;
+            await paymentExist.save();
+
+            res.status(200).send({
+                message: "Payment status updated successfully!",
+                result: paymentExist,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
+                success: false
+            });
+        };
+    };
 };
 
 export default PaymentController;
