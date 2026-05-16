@@ -84,6 +84,32 @@ class PaymentController {
             });
         };
     };
+
+    // Get All Payments By Payment Id
+    getPaymentByPaymentId = async (req: Request, res: Response) => {
+        try {
+            const paymentExist = await BookingModel.findOne({ _id: req.params.bookingId });
+
+            if (!paymentExist) {
+                return res.status(404).send({
+                    message: "Booking not found!",
+                    success: false
+                });
+            };
+            res.status(200).send({
+                message: "Payment fetched successfully!",
+                result: paymentExist,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
+                success: true
+            });
+        };
+    };
 };
 
 export default PaymentController;
