@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { PromoCodeModel } from "../models/promocode.model";
+import { PaymentModel } from "../models/payment.model";
 
 class PromoCodeController {
     // Create PromoCode
@@ -172,6 +173,93 @@ class PromoCodeController {
                 success: true
             });
         };
+    };
+
+    // Apply promo code to a payment using payment ID
+    applyPromoCodeByPaymentId = async (req: Request, res: Response) => {
+        try {
+            // Check if payment exists
+            const paymentExist = await PaymentModel.findOne({ _id: req.params.paymentId });
+
+            if (!paymentExist) {
+                return res.status(404).send({
+                    message: "Payment not found!",
+                    success: false
+                });
+            };
+
+            // Check if promo code exists
+            const promoCodeExist = await PromoCodeModel.findOne({ code: req.body.code.toUpperCase() });
+
+            if (!promoCodeExist) {
+                return res.status(404).send({
+                    message: "Invalid PromoCode!",
+                    success: false
+                });
+            };
+
+            // Check if promo code is active
+            if (!promoCodeExist.isActive) {
+                return res.status(400).send({
+                    message: "PromoCode is inactive!",
+                    success: false
+                });
+            };
+
+            // Get current date for expiration validation
+            const currentDate = new Date();
+
+            // Check if promo code has expired
+            if (promoCodeExist.expiresAt < currentDate) {
+                return res.status(400).send({
+                    message: "PromoCode has expired!",
+                    success: false
+                });
+            };
+
+            // Calculate discount amount
+            const discountAmount = (promoCodeExist.discountPercentage * paymentExist.finalAmount) / 100;
+
+            // Calculate final payable amount
+            const finalAmount = paymentExist.originalAmount - discountAmount;
+
+            // Save discount percentage in payment
+            paymentExist.discountPercentage = promoCodeExist.discountPercentage;
+
+            // Save calculated discount amount
+            paymentExist.discountAmount = discountAmount;
+
+            // Update final payment amount
+            paymentExist.finalAmount = finalAmount;
+
+            // Attach promo code ID to payment
+            paymentExist.promoCodeId = promoCodeExist._id;
+
+            // Save updated payment
+            await paymentExist.save();
+
+            // Send success response
+            res.status(200).send({
+                message: "PromoCode applied successfully!",
+                originalAmount: paymentExist.originalAmount,
+                discountPercentage: promoCodeExist.discountPercentage,
+                discountAmount: discountAmount,
+                finalAmount: finalAmount,
+                success: true,
+            });
+
+        } catch (err: any) {
+            // Log server error
+            console.log(err);
+
+            // Send internal server error response
+            res.status(500).send({
+                message: err.message
+                    ? `Internal server error: ${err.message}`
+                    : "Internal server error!",
+                success: false
+            });
+        }
     };
 
     // Delete PromoCode By PromoCode ID

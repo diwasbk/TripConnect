@@ -11,6 +11,7 @@ promoCodeRouter.get("/all/:isActive", promoCodeController.getAllPromoCodeByStatu
 promoCodeRouter.get("/:promoCodeId", promoCodeController.getPromoCodeByPromoCodeId);
 promoCodeRouter.put("/update/:promoCodeId", schemaValidateMiddleware(promoCodeSchema.partial()), promoCodeController.updatePromoCodeByPromoCodeId);
 promoCodeRouter.patch("/activate-deactivate/:promoCodeId/:isActive", promoCodeController.activateOrDeactivatePromoCodeByPromoCodeId);
-promoCodeRouter.delete("/delete/:promoCodeId", promoCodeController.deletePromoCodeByPromoCodeId);
+promoCodeRouter.put("/apply/:paymentId", promoCodeController.applyPromoCodeByPaymentId);
+promoCodeRouter.delete("/delete/:promoCodeId", schemaValidateMiddleware(promoCodeSchema.partial()), promoCodeController.deletePromoCodeByPromoCodeId);
 
 export default promoCodeRouter;
