@@ -1,56 +1,11 @@
 import { Request, Response } from "express";
 import { BookingModel } from "../models/booking.model";
 import { PaymentModel } from "../models/payment.model";
-import { PackageModel } from "../models/package.model";
 import { paymentStatuses } from "../config/constants";
 import crypto from "crypto";
 import { CLIENT_URL, PAYMENT_SECRET_KEY, PRODUCT_CODE } from "../config/config";
 
 class PaymentController {
-    // Create Payment By Booking ID
-    createPaymentByBookingId = async (req: Request, res: Response) => {
-        try {
-            const bookingExist = await BookingModel.findOne({ _id: req.params.bookingId });
-
-            if (!bookingExist) {
-                return res.status(404).send({
-                    message: "Booking not found!",
-                    success: false
-                });
-            };
-
-            const packageExist = await PackageModel.findOne({ _id: bookingExist.packageId });
-
-            if (!packageExist) {
-                return res.status(404).send({
-                    message: "Package not found!",
-                    success: false
-                });
-            };
-
-            const finalAmount = bookingExist.noOfTravellers * packageExist.price;
-
-            await PaymentModel.create({
-                bookingId: req.params.bookingId.toString(),
-                packageId: bookingExist.packageId,
-                originalAmount: finalAmount,
-                finalAmount: finalAmount
-            });
-
-            res.status(201).send({
-                message: "Payment created successfully!",
-                success: true
-            });
-
-        } catch (err: any) {
-            console.log(err);
-            res.status(500).send({
-                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
-                success: false
-            });
-        };
-    };
-
     // Get All Payments By Status
     getAllPaymentsByPaymentStatus = async (req: Request, res: Response) => {
         try {
@@ -168,7 +123,7 @@ class PaymentController {
             const tax_amount = 0;
 
             const total_amount = amount + tax_amount || 0;
-            const transaction_uuid = "TRIP" + Math.floor(Math.random() * 10000);
+            const transaction_uuid = `${paymentExist._id}X${Math.floor(Math.random() * 1000000)}`;
             const message = `total_amount=${total_amount},transaction_uuid=${transaction_uuid},product_code=${PRODUCT_CODE}`;
             const signature = crypto.createHmac("sha256", PAYMENT_SECRET_KEY).update(message).digest("base64");
 
@@ -180,14 +135,15 @@ class PaymentController {
                     total_amount: total_amount,
                     transaction_uuid: transaction_uuid,
                     product_code: PRODUCT_CODE,
-                    success_url: `${CLIENT_URL}/success/${paymentExist._id}`,
-                    failure_url: `${CLIENT_URL}/failure/${paymentExist._id}`,
+                    success_url: `${CLIENT_URL}/success`,
+                    failure_url: `${CLIENT_URL}/failure`,
                     signature: signature
                 },
                 success: true
             });
 
         } catch (err: any) {
+            console.log(err);
             res.status(500).send({
                 message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
                 success: false
@@ -211,11 +167,22 @@ class PaymentController {
                 Buffer.from(data as string, "base64").toString("utf-8")
             );
 
+            const paymentId = decodedData.transaction_uuid.split("X")[0];
+
+            const paymentExist = await PaymentModel.findById(paymentId);
+
+            if (!paymentExist) {
+                return res.status(404).send({
+                    message: "Payment not found",
+                    success: false,
+                });
+            };
+
             if (decodedData.status === "COMPLETE") {
-                await PaymentModel.findOneAndUpdate(
-                    { _id: req.params.paymentId },
-                    { $set: { paymentStatus: "completed" } }
-                );
+                paymentExist.paymentStatus = "completed";
+                paymentExist.transactionCode = decodedData.transaction_code
+                await paymentExist.save();
+
                 return res.status(200).send({
                     message: "Payment successful",
                     data: decodedData,
@@ -224,10 +191,9 @@ class PaymentController {
             };
 
             if (decodedData.status === "FAILED") {
-                await PaymentModel.findOneAndUpdate(
-                    { _id: req.params.paymentId },
-                    { $set: { paymentStatus: "failed" } }
-                );
+                paymentExist.paymentStatus = "failed";
+                await paymentExist.save();
+
                 return res.status(400).send({
                     message: "Payment failed",
                     data: decodedData,
@@ -235,8 +201,15 @@ class PaymentController {
                 });
             };
 
+            return res.status(400).send({
+                message: "Unknown payment status",
+                data: decodedData,
+                success: false,
+            });
+
         } catch (err: any) {
-            res.status(500).send({
+            console.log(err);
+            return res.status(500).send({
                 message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
                 success: false
             });
