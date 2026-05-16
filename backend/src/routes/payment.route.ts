@@ -5,5 +5,6 @@ const paymentRouter = express.Router();
 const paymentController = new PaymentController();
 
 paymentRouter.post("/create/:bookingId", paymentController.createPaymentByBookingId);
+paymentRouter.get("/all/:paymentStatus", paymentController.getAllPaymentsByPaymentStatus);
 
 export default paymentRouter;
