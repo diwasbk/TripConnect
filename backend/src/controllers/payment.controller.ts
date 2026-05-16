@@ -3,6 +3,8 @@ import { BookingModel } from "../models/booking.model";
 import { PaymentModel } from "../models/payment.model";
 import { PackageModel } from "../models/package.model";
 import { paymentStatuses } from "../config/constants";
+import crypto from "crypto";
+import { CLIENT_URL, PAYMENT_SECRET_KEY, PRODUCT_CODE } from "../config/config";
 
 class PaymentController {
     // Create Payment By Booking ID
@@ -145,6 +147,49 @@ class PaymentController {
             console.log(err);
             res.status(500).send({
                 message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
+                success: false
+            });
+        };
+    };
+
+    // Initialize Esewa Payment
+    initializeEsewaPayment = async (req: Request, res: Response) => {
+        try {
+            const paymentExist = await PaymentModel.findOne({ _id: req.params.paymentId });
+
+            if (!paymentExist) {
+                return res.status(404).send({
+                    message: "Payment not found!",
+                    success: false
+                });
+            };
+
+            const amount = paymentExist.finalAmount;
+            const tax_amount = 0;
+
+            const total_amount = amount + tax_amount || 0;
+            const transaction_uuid = "TRIP" + Math.floor(Math.random() * 10000);
+            const message = `total_amount=${total_amount},transaction_uuid=${transaction_uuid},product_code=${PRODUCT_CODE}`;
+            const signature = crypto.createHmac("sha256", PAYMENT_SECRET_KEY).update(message).digest("base64");
+
+            return res.status(201).send({
+                message: "Esewa payment initialized successfully!",
+                result: {
+                    amount: amount,
+                    tax_amount: tax_amount,
+                    total_amount: total_amount,
+                    transaction_uuid: transaction_uuid,
+                    product_code: PRODUCT_CODE,
+                    success_url: `${CLIENT_URL}/success/${paymentExist._id}`,
+                    failure_url: `${CLIENT_URL}/failure/${paymentExist._id}`,
+                    signature: signature
+                },
+                success: true
+            });
+
+        } catch (err: any) {
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
                 success: false
             });
         };

@@ -8,5 +8,6 @@ paymentRouter.post("/create/:bookingId", paymentController.createPaymentByBookin
 paymentRouter.get("/all/:paymentStatus", paymentController.getAllPaymentsByPaymentStatus);
 paymentRouter.get("/:paymentId", paymentController.getPaymentByPaymentId);
 paymentRouter.patch("/:paymentStatus", paymentController.updatePaymentStatusByPaymentId);
+paymentRouter.get("/esewa/initialize/:paymentId", paymentController.initializeEsewaPayment);
 
 export default paymentRouter;
