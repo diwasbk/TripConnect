@@ -194,6 +194,54 @@ class PaymentController {
             });
         };
     };
+
+    // Verify Esewa Payment
+    verifyEsewaPayment = async (req: Request, res: Response) => {
+        try {
+            const { data } = req.query;
+
+            if (!data) {
+                return res.status(400).send({
+                    message: "No data received from eSewa",
+                    success: false,
+                });
+            };
+
+            const decodedData = JSON.parse(
+                Buffer.from(data as string, "base64").toString("utf-8")
+            );
+
+            if (decodedData.status === "COMPLETE") {
+                await PaymentModel.findOneAndUpdate(
+                    { _id: req.params.paymentId },
+                    { $set: { paymentStatus: "completed" } }
+                );
+                return res.status(200).send({
+                    message: "Payment successful",
+                    data: decodedData,
+                    success: true,
+                });
+            };
+
+            if (decodedData.status === "FAILED") {
+                await PaymentModel.findOneAndUpdate(
+                    { _id: req.params.paymentId },
+                    { $set: { paymentStatus: "failed" } }
+                );
+                return res.status(400).send({
+                    message: "Payment failed",
+                    data: decodedData,
+                    success: false,
+                });
+            };
+
+        } catch (err: any) {
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 
 export default PaymentController;

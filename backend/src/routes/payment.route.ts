@@ -9,5 +9,6 @@ paymentRouter.get("/all/:paymentStatus", paymentController.getAllPaymentsByPayme
 paymentRouter.get("/:paymentId", paymentController.getPaymentByPaymentId);
 paymentRouter.patch("/:paymentStatus", paymentController.updatePaymentStatusByPaymentId);
 paymentRouter.get("/esewa/initialize/:paymentId", paymentController.initializeEsewaPayment);
+paymentRouter.get("/esewa/verify-payment/:paymentId", paymentController.verifyEsewaPayment);
 
 export default paymentRouter;
