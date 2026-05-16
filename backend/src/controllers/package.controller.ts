@@ -173,8 +173,8 @@ class PackageController {
         };
     };
 
-    // Update Package Photos By Package ID
-    updatePackagePhotosByPackageId = async (req: Request, res: Response) => {
+    // Upload Package Photos By Package ID
+    uploadPackagePhotosByPackageId = async (req: Request, res: Response) => {
         try {
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 

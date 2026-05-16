@@ -12,7 +12,7 @@ packageRouter.get("/live", packageController.getAllLivePackages);
 packageRouter.get("/:packageId", packageController.getSinglePackageById);
 packageRouter.post("/create-basic-info", schemaValidateMiddleware(packageBasicInfoSchema), packageController.createPackageBasicInfo);
 packageRouter.put("/update-basic-info/:packageId", schemaValidateMiddleware(packageBasicInfoSchema.partial()), packageController.updatePackageBasicInfoById);
-packageRouter.put("/update-photo/:packageId", upload.single("myfile"), packageController.updatePackagePhotosByPackageId);
+packageRouter.put("/upload-photo/:packageId", upload.single("myfile"), packageController.uploadPackagePhotosByPackageId);
 packageRouter.delete("/delete-photo/:packageId", packageController.deletePackagePhotoByPackageId);
 packageRouter.delete("/delete/:packageId", packageController.deleteSinglePackageById);
 

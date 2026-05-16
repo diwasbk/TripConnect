@@ -29,7 +29,7 @@ const paymentSchema: Schema = new mongoose.Schema<paymentType>({
         type: Number,
         default: 0
     },
-    paymentAmount: {
+    finalAmount: {
         type: Number,
         required: true
     },
