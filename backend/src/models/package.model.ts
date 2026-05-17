@@ -6,7 +6,7 @@ const packageSchema: Schema = new mongoose.Schema<packageType>({
         type: String,
         required: true
     },
-    location: {
+    destination: {
         type: String,
         required: true
     },

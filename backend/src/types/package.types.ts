@@ -37,10 +37,10 @@ export const packageSchema = z.object({
         .string("Title is required")
         .nonempty("Title is required")
         .min(5, "Title must be at least 5 characters."),
-    location: z
-        .string("Location is required")
-        .nonempty("Location is required")
-        .min(5, "Location must be at least 5 characters."),
+    destination: z
+        .string("Destination is required")
+        .nonempty("Destination is required")
+        .min(5, "Destination must be at least 5 characters."),
     intro: z
         .string("Intro is required.")
         .nonempty("Intro is required.")

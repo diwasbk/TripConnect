@@ -4,6 +4,8 @@ import { PaymentModel } from "../models/payment.model";
 import { paymentStatuses } from "../config/constants";
 import crypto from "crypto";
 import { CLIENT_URL, PAYMENT_SECRET_KEY, PRODUCT_CODE } from "../config/config";
+import { sendEmail } from "../services/email";
+import { generateBookingDetailEmail } from "../templates/email.templates";
 
 class PaymentController {
     // Get All Payments By Status
@@ -182,6 +184,42 @@ class PaymentController {
                 paymentExist.paymentStatus = "completed";
                 paymentExist.transactionCode = decodedData.transaction_code
                 await paymentExist.save();
+
+                const bookingExist = await BookingModel.findById(paymentExist.bookingId).populate("packageId");
+                const promoCodeExist = paymentExist.promoCodeId ? await paymentExist.populate("promoCodeId") : null;
+
+                if (bookingExist) {
+                    const packageData = bookingExist.packageId as any;
+                    const bookingObject = bookingExist.toObject();
+                    const promoCodeData = promoCodeExist?.promoCodeId as any;
+
+                    const bookingEmailData = {
+                        ...bookingObject,
+                        bookingId: bookingObject._id,
+                        bookingReference: bookingObject.bookingReference,
+                        packageName: packageData?.title,
+                        destination: packageData?.destination,
+                        duration: packageData?.duration,
+                        tourPackage: packageData,
+                        travelDate: bookingObject.travelDate,
+                        numberOfTravelers: bookingObject.noOfTravellers,
+                        phone: bookingObject.phoneNumber,
+                        totalAmount: paymentExist.finalAmount,
+                        totalPaidAmount: paymentExist.finalAmount,
+                        paymentMethod: paymentExist.paymentMethod,
+                        paymentStatus: paymentExist.paymentStatus,
+                        originalAmount: paymentExist.originalAmount,
+                        discountPercentage: paymentExist.discountPercentage,
+                        discountAmount: paymentExist.discountAmount,
+                        promoCode: promoCodeData?.code || null,
+                    };
+
+                    await sendEmail(
+                        bookingExist.email,
+                        "Your tour has been confirmed - TripConnect",
+                        generateBookingDetailEmail(bookingEmailData)
+                    );
+                };
 
                 return res.status(200).send({
                     message: "Payment successful",
