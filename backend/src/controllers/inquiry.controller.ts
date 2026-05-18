@@ -35,6 +35,26 @@ class InquiryController {
             });
         };
     };
+
+    // Get All Inquiries
+    getAllInquiries = async (req: Request, res: Response) => {
+        try {
+            const result = await inquiryModel.find();
+
+            res.status(200).send({
+                message: result.length ? "Inquiries fetched successfully!" : "No Inquiries",
+                result: result,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });;
+        };
+    };
 };
 
 export default InquiryController;

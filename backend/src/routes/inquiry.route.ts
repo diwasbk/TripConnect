@@ -7,5 +7,6 @@ const inquiryRouter = express.Router();
 const inquiryController = new InquiryController();
 
 inquiryRouter.post("/send", schemaValidateMiddleware(inquirySchema), inquiryController.sendInquiry);
+inquiryRouter.get("/all", inquiryController.getAllInquiries);
 
 export default inquiryRouter;
