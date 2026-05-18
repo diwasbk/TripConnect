@@ -555,3 +555,71 @@ export const generateInquiryConfirmationEmail = (inquiryData: any) => `
   </body>
 </html>
 `;
+
+export const generateInquiryReplyEmail = (inquiryData: any, reply: string) => `
+<html>
+  <body style="margin:0; padding:0; background-color:#f5fbf7; font-family:Manrope, Arial, sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(180deg, #eef7f1 0%, #f8fbf9 100%); padding:40px 0;">
+      <tr>
+        <td align="center">
+          <table width="600" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff; border-radius:14px; overflow:hidden; box-shadow:0 12px 40px rgba(15, 118, 74, 0.12); border:1px solid #dcebe3;">
+            <tr>
+              <td align="center" style="background:linear-gradient(135deg, #0f7a4b 0%, #146c43 100%); padding:32px 24px;">
+                <p style="margin:0 0 10px; color:#b8f3cb; font-size:12px; letter-spacing:1.4px; text-transform:uppercase; font-weight:bold;">TripConnect</p>
+                <h1 style="margin:0; color:#ffffff; font-size:30px; line-height:1.2;">Reply Sent</h1>
+                <p style="margin:10px 0 0; color:rgba(230,255,238,0.95); font-size:14px;">Your message has been reviewed by our support team</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:38px 32px; color:#334155;">
+                <h2 style="margin:0 0 14px; font-size:20px; color:#123324;">Hello ${inquiryData?.name || "Traveler"},</h2>
+
+                <p style="font-size:15px; line-height:1.8; margin:0 0 18px;">
+                  Thanks for reaching out to TripConnect. Here is our response to your inquiry.
+                </p>
+
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:26px 0; background:#f0fff6; border-left:4px solid #0f7a4b; border-radius:8px;">
+                  <tr>
+                    <td style="padding:20px;">
+                      <p style="margin:0 0 10px; font-size:13px; color:#0f7a4b; font-weight:bold; text-transform:uppercase;">Our Response</p>
+                      <p style="margin:0; font-size:14px; color:#475569; line-height:1.8; white-space:pre-line;">${reply}</p>
+                    </td>
+                  </tr>
+                </table>
+
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0; background:#f8fafc; border-left:4px solid #0f7a4b; border-radius:8px;">
+                  <tr>
+                    <td style="padding:20px;">
+                      <p style="margin:0; color:#0f7a4b; font-weight:bold; font-size:13px;">Need anything else?</p>
+                      <p style="margin:10px 0 0; color:#475569; font-size:13px; line-height:1.7;">
+                        If you have more questions, just reply to this email or call us at +977-${PHONE_NUMBER}. We are happy to help.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="font-size:13px; color:#64748b; line-height:1.7; margin:18px 0 0;">
+                  This message contains the response to your inquiry from the TripConnect support team.
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="background:#f8fafc; padding:24px 32px; border-top:1px solid #e2e8f0;">
+                <p style="margin:0; font-size:15px; font-weight:bold; color:#123324;">TripConnect Support Team</p>
+                <p style="margin:5px 0 18px; font-size:13px; color:#64748b;">Nepal travel specialists</p>
+                <p style="margin:5px 0; font-size:13px; color:#64748b;">📍 Kathmandu, Nepal</p>
+                <p style="margin:5px 0; font-size:13px; color:#64748b;">📞 +977-${PHONE_NUMBER}</p>
+                <p style="margin:5px 0; font-size:13px; color:#64748b;">🌐 www.tripconnect.com</p>
+                <hr style="border:none; border-top:1px solid #e2e8f0; margin:20px 0;" />
+                <p style="margin:0; text-align:center; font-size:11px; color:#94a3b8;">© 2026 TripConnect. All rights reserved.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+`;
