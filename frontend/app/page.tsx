@@ -1,9 +1,9 @@
-import HomePage from "./home/page";
+import HomePage from "./(public)/home/page";
 
-export default function Home() {
+export default function Page() {
   return (
     <div>
-      <HomePage />
+      <HomePage/>
     </div>
   );
 }
