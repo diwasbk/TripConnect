@@ -1,26 +1,179 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5fbf7;
+  --foreground: #123324;
+  --surface: #ffffff;
+  --muted: #597162;
+  --primary: #0f7a4b;
+  --primary-deep: #064e3b;
+  --accent: #b8f3cb;
+  --border: rgba(15, 122, 75, 0.14);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-manrope);
+  --font-mono: var(--font-ibm-plex-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(circle at top left, rgba(184, 243, 203, 0.55), transparent 34%),
+    radial-gradient(circle at top right, rgba(15, 122, 75, 0.16), transparent 26%),
+    linear-gradient(180deg, #f8fcf9 0%, #edf8f0 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: rgba(15, 122, 75, 0.18);
+  color: var(--primary-deep);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes riseUp {
+  from {
+    opacity: 1;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentleFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes softPulse {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.hero-reveal,
+.card-reveal,
+.section-reveal {
+  animation: fadeInUp 0.8s cubic-bezier(0.33, 0.66, 0.66, 1) both;
+}
+
+.hero-delay-1 {
+  animation-delay: 0.15s;
+}
+
+.hero-delay-2 {
+  animation-delay: 0.3s;
+}
+
+.hero-delay-3 {
+  animation-delay: 0.45s;
+}
+
+.hero-delay-4 {
+  animation-delay: 0.6s;
+}
+
+.card-delay-1 {
+  animation-delay: 0.15s;
+}
+
+.card-delay-2 {
+  animation-delay: 0.25s;
+}
+
+.card-delay-3 {
+  animation-delay: 0.35s;
+}
+
+.card-delay-4 {
+  animation-delay: 0.45s;
+}
+
+.card-delay-5 {
+  animation-delay: 0.55s;
+}
+
+.float-slow {
+  animation: gentleFloat 6s ease-in-out infinite;
+}
+
+.pulse-soft {
+  animation: softPulse 4s ease-in-out infinite;
+}
+
+/* Smooth transitions for interactive elements */
+a,
+button {
+  transition: all 0.3s cubic-bezier(0.33, 0.66, 0.66, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-reveal,
+  .card-reveal,
+  .section-reveal,
+  .float-slow,
+  .pulse-soft {
+    animation: none;
+    opacity: 1;
+  }
+  
+  a,
+  button {
+    transition: none;
+  }
 }
