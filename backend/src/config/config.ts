@@ -8,3 +8,5 @@ export const APP_PASS = process.env.APP_PASS as string;
 export const USER_EMAIL = process.env.USER_EMAIL as string;
 export const PHONE_NUMBER= process.env.PHONE_NUMBER as string;
 export const CLIENT_URL = process.env.CLIENT_URL as string;
+export const PAYMENT_SECRET_KEY = process.env.PAYMENT_SECRET_KEY as string;
+export const PRODUCT_CODE = process.env.PRODUCT_CODE as string;

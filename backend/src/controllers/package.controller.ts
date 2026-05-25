@@ -5,10 +5,11 @@ class PackageController {
     // Create Package Basic Info
     createPackageBasicInfo = async (req: Request, res: Response) => {
         try {
-            const { title, intro, description, duration, price, includes } = req.body;
+            const { destination, title, intro, description, duration, price, includes } = req.body;
 
             await PackageModel.create({
                 title: title,
+                destination: destination,
                 intro: intro,
                 description: description,
                 duration: duration,
@@ -173,8 +174,8 @@ class PackageController {
         };
     };
 
-    // Update Package Photos By Package ID
-    updatePackagePhotosByPackageId = async (req: Request, res: Response) => {
+    // Upload Package Photos By Package ID
+    uploadPackagePhotosByPackageId = async (req: Request, res: Response) => {
         try {
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 

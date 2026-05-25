@@ -25,12 +25,15 @@ export const paymentSchema = z.object({
         .number()
         .min(0, "Discount amount cannot be negative.")
         .default(0),
-    paymentAmount: z
+    finalAmount: z
         .number("Payment amount is required.")
         .min(0, "Payment amount cannot be negative."),
     paymentMethod: z
         .enum(["cash", "esewa", "khalti", "others"])
         .default("esewa"),
+    transactionCode: z
+        .string()
+        .optional(),
     paymentStatus: z
         .enum(["pending", "completed", "failed"])
         .default("pending"),

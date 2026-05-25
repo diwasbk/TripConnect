@@ -9,6 +9,9 @@ export const bookingSchema = z.object({
     packageId: z
         .instanceof(mongoose.Types.ObjectId)
         .optional(),
+    bookingReference: z
+        .string()
+        .optional(),
     fullName: z
         .string("Full name is required.")
         .nonempty("Full name is required.")

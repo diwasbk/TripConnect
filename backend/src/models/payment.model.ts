@@ -29,7 +29,7 @@ const paymentSchema: Schema = new mongoose.Schema<paymentType>({
         type: Number,
         default: 0
     },
-    paymentAmount: {
+    finalAmount: {
         type: Number,
         required: true
     },
@@ -37,6 +37,11 @@ const paymentSchema: Schema = new mongoose.Schema<paymentType>({
         type: String,
         enum: ["cash", "esewa", "khalti", "others"],
         default: "esewa"
+    },
+    transactionCode: {
+        type: String,
+        unique: true,
+        sparse: true
     },
     paymentStatus: {
         type: String,

@@ -12,6 +12,11 @@ const bookingSchema: Schema = new mongoose.Schema<bookingType>({
         ref: "Package",
         required: true
     },
+    bookingReference: {
+        type: String,
+        required: true,
+        unique: true
+    },
     fullName: {
         type: String,
         required: true
