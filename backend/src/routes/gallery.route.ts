@@ -15,5 +15,6 @@ galleryRouter.patch("/upload-cover-photo/:galleryId", upload.single("myfile"), g
 galleryRouter.patch("/upload-photo/:galleryId", upload.single("myfile"), galleryController.uploadGalleryPhotoByGalleryId);
 galleryRouter.delete("/delete-photo/:galleryId", galleryController.deleteGalleryPhotoByGalleryId);
 galleryRouter.patch("/activate-deactivate/:galleryId/:isActive", galleryController.activateOrdeactivateGallerybyId);
+galleryRouter.delete("/delete/:galleryId", galleryController.deleteGalleryByGalleryId);
 
 export default galleryRouter;
