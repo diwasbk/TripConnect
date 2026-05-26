@@ -9,12 +9,12 @@ const packageController = new PackageController();
 
 packageRouter.get("/all", packageController.getAllPackagesByStatus);
 packageRouter.get("/live", packageController.getAllLivePackages);
-packageRouter.get("/:packageId", packageController.getSinglePackageById);
+packageRouter.get("/:packageId", packageController.getPackageById);
 packageRouter.post("/create-basic-info", schemaValidateMiddleware(packageBasicInfoSchema), packageController.createPackageBasicInfo);
 packageRouter.put("/update-basic-info/:packageId", schemaValidateMiddleware(packageBasicInfoSchema.partial()), packageController.updatePackageBasicInfoById);
 packageRouter.put("/upload-photo/:packageId", upload.single("myfile"), packageController.uploadPackagePhotosByPackageId);
 packageRouter.delete("/delete-photo/:packageId", packageController.deletePackagePhotoByPackageId);
-packageRouter.delete("/delete/:packageId", packageController.deleteSinglePackageById);
+packageRouter.delete("/delete/:packageId", packageController.deletePackageByPackageId);
 
 packageRouter.put("/itinerary/add/:packageId", schemaValidateMiddleware(itinerarySchema), packageController.addPackageItineraryByPackageId);
 packageRouter.get("/itinerary/:packageId", packageController.getPackageItineraryByPackageId);

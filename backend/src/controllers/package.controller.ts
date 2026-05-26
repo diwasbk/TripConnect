@@ -86,8 +86,8 @@ class PackageController {
         };
     };
 
-    // Get Single Package By ID
-    getSinglePackageById = async (req: Request, res: Response) => {
+    // Get Package By ID
+    getPackageById = async (req: Request, res: Response) => {
         try {
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
@@ -113,8 +113,8 @@ class PackageController {
         };
     };
 
-    // Delete Single Package By ID
-    deleteSinglePackageById = async (req: Request, res: Response) => {
+    // Delete Package By Package ID
+    deletePackageByPackageId = async (req: Request, res: Response) => {
         try {
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
