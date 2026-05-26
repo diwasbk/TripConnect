@@ -7,11 +7,13 @@ import promoCodeRouter from "./routes/promocode.route";
 import paymentRouter from "./routes/payment.route";
 import inquiryRouter from "./routes/inquiry.route";
 import galleryRouter from "./routes/gallery.route";
+import cors from "cors";
 
 const app: Application = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 
 // Serve uploaded files
 app.use("/api/uploads/packages", express.static("uploads/packages"))

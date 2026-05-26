@@ -83,6 +83,7 @@ export type packageType = z.infer<typeof packageSchema>;
 // Package Basic Info Schema
 export const packageBasicInfoSchema = packageSchema.pick({
     title: true,
+    destination: true,
     intro: true,
     description: true,
     duration: true,

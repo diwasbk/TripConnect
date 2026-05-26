@@ -137,6 +137,8 @@ class AuthController {
                 sameSite: "strict"
             });
 
+            await sendEmail(userExist.email, "Your password has been changed", generatePasswordUpdatedEmail(userExist));
+
             res.status(200).send({
                 message: "Password changed successfully!",
                 success: true

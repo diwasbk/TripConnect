@@ -214,11 +214,7 @@ class PaymentController {
                         promoCode: promoCodeData?.code || null,
                     };
 
-                    await sendEmail(
-                        bookingExist.email,
-                        "Your tour has been confirmed - TripConnect",
-                        generateBookingDetailEmail(bookingEmailData)
-                    );
+                    await sendEmail(bookingExist.email, "Your tour has been confirmed - TripConnect", generateBookingDetailEmail(bookingEmailData));
                 };
 
                 return res.status(200).send({
