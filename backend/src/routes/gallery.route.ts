@@ -14,5 +14,6 @@ galleryRouter.put("/update/:galleryId", schemaValidateMiddleware(gallerySchema.p
 galleryRouter.patch("/upload-cover-photo/:galleryId", upload.single("myfile"), galleryController.uploadGalleryCoverPhotoByGalleryId);
 galleryRouter.patch("/upload-photo/:galleryId", upload.single("myfile"), galleryController.uploadGalleryPhotoByGalleryId);
 galleryRouter.delete("/delete-photo/:galleryId", galleryController.deleteGalleryPhotoByGalleryId);
+galleryRouter.patch("/activate-deactivate/:galleryId/:isActive", galleryController.activateOrdeactivateGallerybyId);
 
 export default galleryRouter;

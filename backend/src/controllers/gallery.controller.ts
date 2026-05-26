@@ -251,5 +251,52 @@ class GalleryController {
             });
         };
     };
+
+    // Activate or Deactivate Gallery By Gallery ID
+    activateOrdeactivateGallerybyId = async (req: Request, res: Response) => {
+        try {
+            const galleryExist = await GalleryModel.findOne({ _id: req.params.galleryId });
+
+            if (!galleryExist) {
+                return res.status(404).send({
+                    message: "Gallery not found!",
+                    success: false
+                });
+            };
+
+            let message: string;
+            let isActive: boolean;
+
+            if (req.params.isActive == "true") {
+                message = "activated";
+                isActive = true;
+            } else if (req.params.isActive == "false") {
+                message = "deactivated";
+                isActive = false;
+            } else {
+                return res.status(400).send({
+                    message: "Invalid value! Use true or false.",
+                    success: false
+                });
+            };
+
+            await GalleryModel.findOneAndUpdate(
+                { _id: req.params.galleryId },
+                { $set: { isActive: isActive } }
+            );
+
+            res.status(200).send({
+                message: `Gallery ${message} successfully!`,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 export default GalleryController;
