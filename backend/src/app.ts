@@ -6,6 +6,7 @@ import bookingRouter from "./routes/booking.route";
 import promoCodeRouter from "./routes/promocode.route";
 import paymentRouter from "./routes/payment.route";
 import inquiryRouter from "./routes/inquiry.route";
+import galleryRouter from "./routes/gallery.route";
 
 const app: Application = express();
 
@@ -21,5 +22,6 @@ app.use("/api/booking", bookingRouter);
 app.use("/api/promocode", promoCodeRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/inquiry", inquiryRouter);
+app.use("/api/gallery", galleryRouter);
 
 export default app;
