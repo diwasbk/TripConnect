@@ -11,5 +11,6 @@ galleryRouter.post("/create", schemaValidateMiddleware(gallerySchema.pick({ titl
 galleryRouter.get("/:galleryId", galleryController.getGalleryByGalleryId);
 galleryRouter.get("/all/:isActive", galleryController.getAllGalleriesByStatus);
 galleryRouter.put("/update/:galleryId", schemaValidateMiddleware(gallerySchema.partial()), galleryController.updateGalleryByGalleryId);
+galleryRouter.patch("/upload-cover-photo/:galleryId", upload.single("myfile"), galleryController.uploadGalleryCoverPhotoByGalleryId);
 
 export default galleryRouter;

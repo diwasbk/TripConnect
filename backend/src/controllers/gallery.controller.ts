@@ -125,5 +125,43 @@ class GalleryController {
             });
         };
     };
+
+    // Upload Gallery Cover Photo By Gallery ID
+    uploadGalleryCoverPhotoByGalleryId = async (req: Request, res: Response) => {
+        try {
+            const galleryExist = await GalleryModel.findOne({ _id: req.params.galleryId });
+
+            if (!galleryExist) {
+                return res.status(404).send({
+                    message: "Gallery not found!",
+                    success: false
+                });
+            };
+
+            if (!req.file) {
+                return res.status(400).send({
+                    message: "No file uploaded!",
+                    success: false
+                });
+            };
+
+            const result = galleryExist.coverPhotoUrl = req.file.path.replace(/\\/g, "/");
+
+            await galleryExist.save();
+
+            res.status(200).send({
+                message: "Gallery cover photo uploaded successfully!",
+                result: result,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 export default GalleryController;
