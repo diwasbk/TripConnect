@@ -13,5 +13,6 @@ galleryRouter.get("/all/:isActive", galleryController.getAllGalleriesByStatus);
 galleryRouter.put("/update/:galleryId", schemaValidateMiddleware(gallerySchema.partial()), galleryController.updateGalleryByGalleryId);
 galleryRouter.patch("/upload-cover-photo/:galleryId", upload.single("myfile"), galleryController.uploadGalleryCoverPhotoByGalleryId);
 galleryRouter.patch("/upload-photo/:galleryId", upload.single("myfile"), galleryController.uploadGalleryPhotoByGalleryId);
+galleryRouter.delete("/delete-photo/:galleryId", galleryController.deleteGalleryPhotoByGalleryId);
 
 export default galleryRouter;

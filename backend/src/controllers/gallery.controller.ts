@@ -201,5 +201,55 @@ class GalleryController {
             });
         };
     };
+
+    // Delete Gallery Photo By Gallery ID
+    deleteGalleryPhotoByGalleryId = async (req: Request, res: Response) => {
+        try {
+            const galleryExist = await GalleryModel.findOne({ _id: req.params.galleryId });
+
+            if (!galleryExist) {
+                return res.status(404).send({
+                    mesage: "Gallery not found!",
+                    success: false
+                });
+            };
+
+            const photoUrl = req.body.photoUrl;
+
+            if (!photoUrl) {
+                return res.status(400).send({
+                    message: "Photo URL is required!",
+                    success: false
+                });
+            };
+
+            const photoExists = galleryExist.photoUrls.includes(photoUrl);
+
+            if (!photoExists) {
+                return res.status(404).send({
+                    message: "Photo not found in gallery!",
+                    success: false
+                });
+            };
+
+            galleryExist.photoUrls = galleryExist.photoUrls.filter((photo: string) =>
+                photo !== photoUrl
+            );
+
+            await galleryExist.save();
+
+            res.status(200).send({
+                message: "Gallery photo deleted successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 export default GalleryController;
