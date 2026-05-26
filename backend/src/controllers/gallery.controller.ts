@@ -90,5 +90,40 @@ class GalleryController {
             });
         };
     };
+
+    // Update Gallery By Gallery ID
+    updateGalleryByGalleryId = async (req: Request, res: Response) => {
+        try {
+            const galleryExist = await GalleryModel.findOne({ _id: req.params.galleryId });
+
+            if (!galleryExist) {
+                return res.status(404).send({
+                    message: "Gallery not found!",
+                    success: false
+                });
+            };
+
+            const { title, caption } = req.body;
+
+            const result = await GalleryModel.findOneAndUpdate(
+                { _id: req.params.galleryId },
+                { $set: { title: title, caption: caption } },
+                { new: true }
+            );
+
+            res.status(200).send({
+                message: "Gallery updated successfully!",
+                result: result,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
 };
 export default GalleryController;
