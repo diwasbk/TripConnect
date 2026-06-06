@@ -1,3 +1,4 @@
+import Footer from "../_components/footer";
 import NavBar from "../_components/navbar";
 
 export default function HomePage() {
