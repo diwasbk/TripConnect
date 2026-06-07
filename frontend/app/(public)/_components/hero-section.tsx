@@ -72,7 +72,7 @@ export default function HeroSection() {
                                             <p className="text-lg font-black text-emerald-900">{packages[0].price}</p>
                                         </div>
                                         <Link
-                                            href={`/packages/${packages[0]._id}`}
+                                            href={`/packages/${packages[0].slug}`}
                                             className="inline-flex w-full justify-center shrink-0 rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-emerald-800 sm:w-auto"
                                         >
                                             Explore Package
@@ -100,7 +100,7 @@ export default function HeroSection() {
                         {packages.slice(0, 3).map((pkg, index) => (
                             <Link
                                 key={pkg._id}
-                                href={`/packages/${pkg._id}`}
+                                href={`/packages/${pkg.slug}`}
                                 className={`card-reveal overflow-hidden rounded-4xl border border-emerald-100 bg-white shadow-md shadow-emerald-950/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-950/10 card-delay-${(index % 5) + 1}`}
                             >
                                 <div className="relative">

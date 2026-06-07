@@ -12,7 +12,7 @@ export default function PackageSection() {
 
             <div className="mt-8 grid gap-4 sm:gap-6 lg:gap-8">
                 {packages.map((trip, index) => (
-                    <Link key={trip._id} href={`/packages/${trip._id}`}>
+                    <Link key={trip._id} href={`/packages/${trip.slug}`}>
                         <article className={`card-reveal overflow-hidden rounded-2xl sm:rounded-3xl border border-emerald-100 bg-white shadow-md shadow-emerald-950/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-950/10 card-delay-${(index % 5) + 1}`}>
                             <div className="flex flex-col sm:flex-row min-h-auto sm:min-h-48">
                                 <div className="relative w-full sm:w-40 sm:shrink-0 h-40 sm:h-auto lg:w-64">
