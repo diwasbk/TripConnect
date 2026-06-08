@@ -6,7 +6,7 @@ const paymentController = new PaymentController();
 
 paymentRouter.get("/all/:paymentStatus", paymentController.getAllPaymentsByPaymentStatus);
 paymentRouter.get("/:paymentId", paymentController.getPaymentByPaymentId);
-paymentRouter.patch("/:paymentStatus", paymentController.updatePaymentStatusByPaymentId);
+paymentRouter.patch("/update/:paymentId/:paymentStatus", paymentController.updatePaymentStatusByPaymentId);
 paymentRouter.get("/esewa/initialize/:paymentId", paymentController.initializeEsewaPayment);
 paymentRouter.get("/esewa/verify-payment", paymentController.verifyEsewaPayment);
 

@@ -37,6 +37,9 @@ export const packageSchema = z.object({
         .string("Title is required")
         .nonempty("Title is required")
         .min(5, "Title must be at least 5 characters."),
+    slug: z
+        .string()
+        .optional(),
     destination: z
         .string("Destination is required")
         .nonempty("Destination is required")
@@ -71,6 +74,9 @@ export const packageSchema = z.object({
     departures: z
         .array(departureSchema)
         .default([]),
+    totalBookings: z
+        .number()
+        .optional(),
     status: z
         .enum(["draft", "published"])
         .default("draft"),
