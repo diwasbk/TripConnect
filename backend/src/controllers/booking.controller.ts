@@ -7,9 +7,22 @@ import { PaymentModel } from "../models/payment.model";
 import { generateBookingReference } from "../utils/helper";
 
 class BookingController {
-    // Book Package For Guest User By Package ID
-    bookPackageForGuestUserByPackageId = async (req: Request, res: Response) => {
+    // Book Package By Package ID
+    bookPackageByPackageId = async (req: Request, res: Response) => {
         try {
+            const user = req.user as { id: string } | null;
+            let isGuest = true;
+            let userId: string | undefined;
+
+            // Associate the booking with the user only if the authenticated user exists
+            if (user && user.id) {
+                const userExist = await UserModel.findOne({ _id: user.id });
+                if (userExist) {
+                    isGuest = false;
+                    userId = user.id;
+                };
+            };
+
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
             if (!packageExist) {
@@ -42,6 +55,7 @@ class BookingController {
             };
 
             const booking = await BookingModel.create({
+                userId: userId,
                 packageId: packageExist._id,
                 bookingReference: bookingReference,
                 fullName: fullName,
@@ -50,90 +64,7 @@ class BookingController {
                 travelDate: travelDate,
                 noOfTravellers: noOfTravellers,
                 specialRequest: specialRequest,
-            });
-
-            selectedDeparture.availableSeats -= noOfTravellers;
-
-            await packageExist.save();
-
-            const finalAmount = noOfTravellers * packageExist.price;
-
-            const payment = await PaymentModel.create({
-                bookingId: booking._id,
-                packageId: packageExist._id,
-                originalAmount: finalAmount,
-                finalAmount: finalAmount
-            });
-
-            res.status(201).send({
-                message: "Booking created successfully!",
-                booking: booking,
-                payment: payment,
-                success: true
-            });
-
-        } catch (err: any) {
-            console.log(err);
-            res.status(500).send({
-                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
-                success: false
-            });
-        };
-    };
-
-    // Book Package For Registered User By Package ID
-    bookPackageForRegisteredUserByPackageId = async (req: Request, res: Response) => {
-        try {
-            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
-
-            if (!packageExist) {
-                return res.status(404).send({
-                    message: "Package not found!",
-                    success: false
-                });
-            };
-
-            const user = req.user as { id: string };
-
-            const userExist = await UserModel.findOne({ _id: user.id });
-
-            if (!userExist) {
-                return res.status(404).send({
-                    message: "User not found!",
-                    success: false
-                });
-            };
-
-            const { travelDate, noOfTravellers, specialRequest } = req.body;
-
-            const selectedDeparture = packageExist.departures.find(dep =>
-                new Date(dep.date).toDateString() === new Date(travelDate).toDateString()
-            );
-
-            if (!selectedDeparture) {
-                return res.status(400).send({
-                    message: "The selected departure date is not available. Please choose another date.",
-                    success: false
-                });
-            };
-
-            if (selectedDeparture.availableSeats < noOfTravellers) {
-                return res.status(400).send({
-                    message: `Sorry, only ${selectedDeparture.availableSeats} seat(s) are available for the selected departure date.`,
-                    success: false
-                });
-            };
-
-            const booking = await BookingModel.create({
-                userId: user.id,
-                packageId: packageExist._id,
-                fullName: userExist.fullName,
-                email: userExist.email,
-                phoneNumber: userExist.phoneNumber,
-                travelDate: travelDate,
-                noOfTravellers: noOfTravellers,
-                specialRequest: specialRequest,
-                isGuest: false
+                isGuest: isGuest
             });
 
             selectedDeparture.availableSeats -= noOfTravellers;
@@ -251,9 +182,45 @@ class BookingController {
                 });
             };
 
+            const paymentExist = await PaymentModel.findOne({ bookingId: bookingExist._id });
+
+            if (!paymentExist) {
+                return res.status(404).send({
+                    message: "Payment not found",
+                    success: false,
+                });
+            };
+
+            const packageExist = bookingExist ? await bookingExist.populate("packageId") : null;
+            const packageData = packageExist?.packageId as any;
+
+            const promoCodeExist = paymentExist.promoCodeId ? await paymentExist.populate("promoCodeId") : null;
+            const promoCodeData = promoCodeExist?.promoCodeId as any;
+
+            const bookingData = {
+                fullName: bookingExist.fullName,
+                email: bookingExist.email,
+                phoneNumber: bookingExist.phoneNumber,
+                specialRequest: bookingExist.specialRequest,
+                bookingDate: bookingExist?.createdAt,
+                bookingReference: bookingExist.bookingReference,
+                packageName: packageData.title,
+                duration: packageData?.duration,
+                destination: packageData?.destination,
+                noOfTravellers: packageData?.noOfTravellers,
+                travelDate: packageData.travelDate,
+                paymentId: paymentExist._id,
+                originalAmount: paymentExist.originalAmount,
+                discountAmount: paymentExist.discountAmount,
+                totalPaidAmount: paymentExist.finalAmount,
+                promoCode: promoCodeData?.code || null,
+                paymentMethod: paymentExist.paymentMethod,
+                paymentStatus: paymentExist.paymentStatus
+            };
+
             res.status(200).send({
                 message: "Booking fetched successfully!",
-                result: bookingExist,
+                result: bookingData,
                 success: true
             });
 
@@ -294,6 +261,7 @@ class BookingController {
             });
         };
     }
+
     // Get All Bookings By User Id
     getAllBookingsByUserId = async (req: Request, res: Response) => {
         try {
