@@ -6,6 +6,7 @@ import crypto from "crypto";
 import { CLIENT_URL, PAYMENT_SECRET_KEY, PRODUCT_CODE } from "../config/config";
 import { sendEmail } from "../services/email";
 import { generateBookingDetailEmail } from "../templates/email.templates";
+import { PackageModel } from "../models/package.model";
 
 class PaymentController {
     // Get All Payments By Status
@@ -73,7 +74,7 @@ class PaymentController {
     // Update Payment Status By Payment ID
     updatePaymentStatusByPaymentId = async (req: Request, res: Response) => {
         try {
-            const paymentStatus = req.body.paymentStatus as typeof paymentStatuses[number];
+            const paymentStatus = req.params.paymentStatus as typeof paymentStatuses[number];
 
             if (!paymentStatuses.includes(paymentStatus)) {
                 return res.status(400).send({
@@ -91,8 +92,17 @@ class PaymentController {
                 });
             };
 
+            const oldPaymentStatus = paymentExist.paymentStatus;
+
             paymentExist.paymentStatus = paymentStatus;
             await paymentExist.save();
+
+            if (oldPaymentStatus !== "completed" && paymentStatus === "completed") {
+                await PackageModel.findByIdAndUpdate(
+                    paymentExist.packageId,
+                    { $inc: { totalBookings: 1 } }
+                );
+            };
 
             res.status(200).send({
                 message: "Payment status updated successfully!",
@@ -112,7 +122,7 @@ class PaymentController {
     // Initialize Esewa Payment
     initializeEsewaPayment = async (req: Request, res: Response) => {
         try {
-            const paymentExist = await PaymentModel.findOne({ _id: req.params.paymentId });
+            const paymentExist = await PaymentModel.findOne({ _id: req.params.paymentId }).populate("packageId");
 
             if (!paymentExist) {
                 return res.status(404).send({
@@ -137,8 +147,8 @@ class PaymentController {
                     total_amount: total_amount,
                     transaction_uuid: transaction_uuid,
                     product_code: PRODUCT_CODE,
-                    success_url: `${CLIENT_URL}/success`,
-                    failure_url: `${CLIENT_URL}/failure`,
+                    success_url: `${CLIENT_URL}/packages/${(paymentExist.packageId as any).slug}/booking/payment/success`,
+                    failure_url: `${CLIENT_URL}/packages/${(paymentExist.packageId as any).slug}/booking/payment/failure`,
                     signature: signature
                 },
                 success: true
@@ -181,40 +191,50 @@ class PaymentController {
             };
 
             if (decodedData.status === "COMPLETE") {
+                if (paymentExist.paymentStatus !== "completed") {
+                    await PackageModel.findByIdAndUpdate(
+                        paymentExist.packageId,
+                        { $inc: { totalBookings: 1 } }
+                    );
+                };
+
                 paymentExist.paymentStatus = "completed";
                 paymentExist.transactionCode = decodedData.transaction_code
                 await paymentExist.save();
 
-                const bookingExist = await BookingModel.findById(paymentExist.bookingId).populate("packageId");
                 const promoCodeExist = paymentExist.promoCodeId ? await paymentExist.populate("promoCodeId") : null;
+
+                const bookingExist = await BookingModel.findById(paymentExist.bookingId).populate("packageId");
 
                 if (bookingExist) {
                     const packageData = bookingExist.packageId as any;
-                    const bookingObject = bookingExist.toObject();
                     const promoCodeData = promoCodeExist?.promoCodeId as any;
 
                     const bookingEmailData = {
-                        ...bookingObject,
-                        bookingId: bookingObject._id,
-                        bookingReference: bookingObject.bookingReference,
-                        packageName: packageData?.title,
-                        destination: packageData?.destination,
+                        fullName: bookingExist.fullName,
+                        email: bookingExist.email,
+                        phoneNumber: bookingExist.phoneNumber,
+                        specialRequest: bookingExist.specialRequest,
+                        bookingDate: bookingExist?.createdAt,
+                        bookingReference: bookingExist.bookingReference,
+                        packageName: packageData.title,
                         duration: packageData?.duration,
-                        tourPackage: packageData,
-                        travelDate: bookingObject.travelDate,
-                        numberOfTravelers: bookingObject.noOfTravellers,
-                        phone: bookingObject.phoneNumber,
-                        totalAmount: paymentExist.finalAmount,
-                        totalPaidAmount: paymentExist.finalAmount,
-                        paymentMethod: paymentExist.paymentMethod,
-                        paymentStatus: paymentExist.paymentStatus,
+                        destination: packageData?.destination,
+                        noOfTravellers: packageData?.noOfTravellers,
+                        travelDate: packageData.travelDate,
                         originalAmount: paymentExist.originalAmount,
-                        discountPercentage: paymentExist.discountPercentage,
                         discountAmount: paymentExist.discountAmount,
+                        totalPaidAmount: paymentExist.finalAmount,
                         promoCode: promoCodeData?.code || null,
+                        paymentMethod: paymentExist.paymentMethod,
+                        paymentStatus: paymentExist.paymentStatus
                     };
 
-                    await sendEmail(bookingExist.email, "Your tour has been confirmed - TripConnect", generateBookingDetailEmail(bookingEmailData));
+                    await sendEmail(
+                        bookingExist.email,
+                        "Your tour has been confirmed - TripConnect",
+                        generateBookingDetailEmail(bookingEmailData)
+                    );
                 };
 
                 return res.status(200).send({

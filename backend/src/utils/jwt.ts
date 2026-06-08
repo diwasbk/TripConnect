@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from "express";
 // Extend Request to include user
 declare module "express" {
     interface Request {
-        user?: string | JwtPayload
+        user?: string | JwtPayload | null
     }
 };
 

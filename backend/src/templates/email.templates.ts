@@ -312,7 +312,7 @@ export const generateBookingDetailEmail = (bookingData: any) => `
               <td style="padding:40px 30px; color:#324155;">
 
                 <h2 style="margin-top:0; font-size:20px; color:#123324;">
-                  Hello ${bookingData?.fullName || bookingData?.user?.fullName || "Traveler"},
+                  Hello ${bookingData?.fullName || "Traveler"},
                 </h2>
 
                 <p style="font-size:15px; line-height:1.8;">
@@ -334,13 +334,13 @@ export const generateBookingDetailEmail = (bookingData: any) => `
                         <tr>
                           <!-- Left column -->
                           <td valign="top" style="padding-right:10px; width:50%;">
-                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Name:</strong> ${bookingData?.fullName || bookingData?.user?.fullName || "N/A"}</p>
-                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Email:</strong> ${bookingData?.email || bookingData?.user?.email || "N/A"}</p>
+                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Name:</strong> ${bookingData?.fullName || "N/A"}</p>
+                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Email:</strong> ${bookingData?.email || "N/A"}</p>
                           </td>
 
                           <!-- Right column -->
                           <td valign="top" style="padding-left:10px; width:50%;">
-                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Phone:</strong> ${bookingData?.phone || bookingData?.user?.phone || "N/A"}</p>
+                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Phone:</strong> ${bookingData?.phone || "N/A"}</p>
                             <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Special Request:</strong> ${bookingData?.specialRequest || "N/A"}</p>
                           </td>
                         </tr>
@@ -366,15 +366,15 @@ export const generateBookingDetailEmail = (bookingData: any) => `
                           <!-- Left column -->
                           <td valign="top" style="padding-right:10px; width:50%;">
                             <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Booking Reference:</strong> ${bookingData?.bookingReference || "N/A"}</p>
-                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Package:</strong> ${bookingData?.packageName || bookingData?.tourPackage?.title || "N/A"}</p>
-                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Travel Date:</strong> ${bookingData?.travelDate ? new Date(bookingData.travelDate).toDateString() : bookingData?.startDate ? new Date(bookingData.startDate).toDateString() : "N/A"}</p>
+                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Package:</strong> ${bookingData?.packageName || "N/A"}</p>
+                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Travel Date:</strong> ${bookingData?.travelDate ? new Date(bookingData.travelDate).toDateString() : "N/A"}</p>
                           </td>
 
                           <!-- Right column -->
                           <td valign="top" style="padding-left:10px; width:50%;">
-                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Duration:</strong> ${bookingData?.tourPackage?.duration || bookingData?.duration || "N/A"}</p>
-                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Destination:</strong> ${bookingData?.destination || bookingData?.tourPackage?.destination || "N/A"}</p>
-                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Number of Travelers:</strong> ${bookingData?.numberOfTravelers || bookingData?.guests || "N/A"}</p>
+                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Duration:</strong> ${bookingData?.duration || "N/A"}</p>
+                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Destination:</strong> ${bookingData?.destination || "N/A"}</p>
+                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Number of Travelers:</strong> ${bookingData?.numberOfTravelers || "N/A"}</p>
                           </td>
                         </tr>
                       </table>
@@ -406,7 +406,7 @@ export const generateBookingDetailEmail = (bookingData: any) => `
                           <!-- Right column -->
                           <td valign="top" style="padding-left:10px; width:50%;">
                             <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Promo Code:</strong> ${bookingData?.promoCode || "N/A"}</p>
-                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Total Paid Amount:</strong> ${bookingData?.totalPaidAmount !== undefined && bookingData?.totalPaidAmount !== null ? `NPR ${bookingData.totalPaidAmount}` : bookingData?.totalAmount !== undefined && bookingData?.totalAmount !== null ? `NPR ${bookingData.totalAmount}` : "N/A"}</p>
+                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Total Paid Amount:</strong> ${bookingData?.totalPaidAmount !== undefined && bookingData?.totalPaidAmount !== null ? `NPR ${bookingData.totalPaidAmount}` : "N/A"}</p>
                             <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Payment Status:</strong> ${bookingData?.paymentStatus || "N/A"}</p>
                           </td>
                         </tr>

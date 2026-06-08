@@ -5,10 +5,13 @@ class PackageController {
     // Create Package Basic Info
     createPackageBasicInfo = async (req: Request, res: Response) => {
         try {
-            const { destination, title, intro, description, duration, price, includes } = req.body;
+            const { title, destination, intro, description, duration, price, includes } = req.body;
+
+            const createdSlug = title.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
             await PackageModel.create({
                 title: title,
+                slug: createdSlug,
                 destination: destination,
                 intro: intro,
                 description: description,
@@ -66,13 +69,48 @@ class PackageController {
     // Get All Live Packages
     getAllLivePackages = async (req: Request, res: Response) => {
         try {
-            const result = await PackageModel.find({
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 5;
+
+            const total = await PackageModel.countDocuments({
                 status: "published",
                 isActive: true
             });
 
+            const result = await PackageModel.find({
+                status: "published",
+                isActive: true
+            }).skip((page - 1) * limit).limit(limit);
+
             res.status(200).send({
-                message: result.length ? "Packaged fetched successfully!" : "No Packages!",
+                message: result.length ? "Package fetched successfully!" : "No Packages!",
+                result: result,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                    hasNextPage: page < Math.ceil(total / limit),
+                    hasPreviousPage: page > 1
+                },
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });;
+        };
+    };
+    // Get Package By Slug
+    getPackageBySlug = async (req: Request, res: Response) => {
+        try {
+            const result = await PackageModel.findOne({ slug: req.params.slug });
+
+            res.status(200).send({
+                message: "Package fetched successfully!",
                 result: result,
                 success: true
             });
@@ -83,6 +121,33 @@ class PackageController {
                 message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
                 success: false
             });;
+        };
+    };
+
+    // Get Top Booked Packages
+    getTopBookedPackages = async (req: Request, res: Response) => {
+        try {
+            const limit = Number(req.query.limit) || 3;
+
+            const packages = await PackageModel.find({
+                isActive: true, status: "published"
+            }).sort({ totalBookings: -1 }).limit(limit);
+
+            res.status(200).send({
+                message: `Top ${limit} booked packages fetched successfully!`,
+                result: packages,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.error(err);
+
+            res.status(500).send({
+                message: err.message
+                    ? `Internal server error: ${err.message}`
+                    : "Internal server error!",
+                success: false
+            });
         };
     };
 
@@ -113,8 +178,8 @@ class PackageController {
         };
     };
 
-    // Delete Package By Package ID
-    deletePackageByPackageId = async (req: Request, res: Response) => {
+    // Delete Package By ID
+    deletePackageById = async (req: Request, res: Response) => {
         try {
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
