@@ -16,11 +16,11 @@ function parsePackagePrice(price: string | undefined) {
 
     const numericValue = Number(price.replace(/[^\d]/g, ""));
     return Number.isFinite(numericValue) ? numericValue : 0;
-}
+};
 
 function formatCurrency(amount: number) {
     return `NPR ${amountFormatter.format(amount)}`;
-}
+};
 
 export default function BookingSection() {
     const params = useParams();
@@ -181,6 +181,112 @@ export default function BookingSection() {
                         </div>
                     </form>
                 </div>
+
+                <aside className="lg:sticky lg:top-24 lg:self-start">
+                    <div className="overflow-hidden rounded-4xl border border-emerald-100 bg-white shadow-xl shadow-emerald-900/5">
+                        <div className="relative">
+                            <img
+                                src={selectedPackage?.photoUrls?.[0]}
+                                alt={selectedPackage?.title}
+                                className="h-56 w-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-linear-to-t from-slate-950/75 via-slate-950/10 to-transparent" />
+                            <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-100">Your trip</p>
+                                <h2 className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">{selectedPackage?.title}</h2>
+                                <p className="mt-2 text-sm text-emerald-50/90">{selectedPackage?.destination}</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-5 p-5 sm:p-6">
+                            <div className="flex flex-wrap gap-2">
+                                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-800">
+                                    {selectedPackage?.duration}
+                                </span>
+                                <span className="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-800">
+                                    {selectedPackage?.includes?.length ?? 0} inclusions
+                                </span>
+                            </div>
+
+                            <div className="space-y-3 rounded-3xl border border-emerald-100 bg-emerald-50/60 p-4 sm:p-5">
+                                <div className="flex items-center justify-between gap-4 text-sm text-slate-700">
+                                    <span>Price per traveler</span>
+                                    <span className="font-bold text-emerald-900">{selectedPackage?.price}</span>
+                                </div>
+                                <div className="flex items-center justify-between gap-4 text-sm text-slate-700">
+                                    <span>Travelers</span>
+                                    <span className="font-bold text-slate-900">{travelerTotal}</span>
+                                </div>
+                                <div className="flex items-center justify-between gap-4 border-t border-emerald-100 pt-3 text-sm text-slate-700">
+                                    <span className="font-medium text-slate-900">Estimated total</span>
+                                    <span className="text-lg font-black text-emerald-900">{formatCurrency(totalPrice)}</span>
+                                </div>
+                                <p className="text-xs leading-6 text-slate-500">
+                                    Final amount may change after promo codes, room upgrades, or pickup changes.
+                                </p>
+                            </div>
+
+                            <div className="rounded-3xl border border-emerald-100 bg-white p-4 shadow-sm shadow-emerald-950/5 sm:p-5">
+                                <ul className="space-y-4">
+                                    {[
+                                        {
+                                            title: "Instant confirmation",
+                                            description: "Get booking details immediately.",
+                                        },
+                                        {
+                                            title: "Secure payment",
+                                            description: "Your payment is handled safely.",
+                                        },
+                                        {
+                                            title: "24/7 support",
+                                            description: "We are here when you need help.",
+                                        },
+                                    ].map((item) => (
+                                        <li key={item.title} className="flex items-start gap-3">
+                                            <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 shadow-sm">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4">
+                                                    <path
+                                                        d="M20 6 9 17l-5-5"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2.5"
+                                                    />
+                                                </svg>
+                                            </span>
+                                            <div>
+                                                <p className="text-sm font-semibold text-slate-950">{item.title}</p>
+                                                <p className="mt-1 text-sm leading-6 text-slate-600">{item.description}</p>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div className="rounded-3xl bg-slate-900 px-5 py-3 text-white shadow-lg shadow-slate-950/20">
+                                <div className="flex items-center gap-3">
+                                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-emerald-100">
+                                        <FiShield />
+                                    </span>
+                                    <div>
+                                        <p className="text-sm font-semibold text-white">We value your privacy</p>
+                                        <p className="mt-1 text-sm leading-6 text-slate-300">
+                                            Your data is protected and never shared.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Link
+                                href="/contact"
+                                className="inline-flex w-full items-center justify-center rounded-full border border-emerald-200 bg-white px-6 py-3 text-sm font-semibold text-emerald-900 transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-50"
+                            >
+                                Need help before booking?
+                            </Link>
+                        </div>
+                    </div>
+                </aside>
             </section>
         </div>
     );
