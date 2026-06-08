@@ -209,6 +209,7 @@ class BookingController {
                 destination: packageData?.destination,
                 noOfTravellers: packageData?.noOfTravellers,
                 travelDate: packageData.travelDate,
+                paymentId: paymentExist._id,
                 originalAmount: paymentExist.originalAmount,
                 discountAmount: paymentExist.discountAmount,
                 totalPaidAmount: paymentExist.finalAmount,
