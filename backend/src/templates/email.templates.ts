@@ -502,7 +502,7 @@ export const generateInquiryConfirmationEmail = (inquiryData: any) => `
 
             <tr>
               <td style="padding:38px 32px; color:#334155;">
-                <h2 style="margin:0 0 14px; font-size:20px; color:#123324;">Hello ${inquiryData?.name || "Traveler"},</h2>
+                <h2 style="margin:0 0 14px; font-size:20px; color:#123324;">Hello ${inquiryData?.fullName || "Traveler"},</h2>
 
                 <p style="font-size:15px; line-height:1.8; margin:0 0 18px;">
                   Thanks for contacting TripConnect. We have received your message and our support team is reviewing it carefully.
@@ -512,9 +512,9 @@ export const generateInquiryConfirmationEmail = (inquiryData: any) => `
                   <tr>
                     <td style="padding:20px;">
                       <p style="margin:0 0 10px; font-size:13px; color:#0f7a4b; font-weight:bold; text-transform:uppercase;">Inquiry Summary</p>
-                      <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Name:</strong> ${inquiryData?.name || "N/A"}</p>
+                      <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Name:</strong> ${inquiryData?.fullName || "N/A"}</p>
                       <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Email:</strong> ${inquiryData?.email || "N/A"}</p>
-                      <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Phone:</strong> ${inquiryData?.phone || "N/A"}</p>
+                      <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Phone:</strong> ${inquiryData?.phoneNumber || "N/A"}</p>
                       <p style="margin:14px 0 0; font-size:14px; color:#475569; line-height:1.7;"><strong>Message:</strong> ${inquiryData?.message || "N/A"}</p>
                     </td>
                   </tr>

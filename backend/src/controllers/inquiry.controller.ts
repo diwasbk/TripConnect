@@ -8,16 +8,16 @@ class InquiryController {
     sendInquiry = async (req: Request, res: Response) => {
         try {
 
-            const { name, email, phone, message } = req.body;
+            const { fullName, email, phoneNumber, message } = req.body;
 
             await inquiryModel.create({
-                name: name,
+                fullName: fullName,
                 email: email,
-                phone: phone,
+                phoneNumber: phoneNumber,
                 message: message
             });
 
-            const html = generateInquiryConfirmationEmail({ name, email, phone, message });
+            const html = generateInquiryConfirmationEmail({ fullName, email, phoneNumber, message });
 
             await sendEmail(email, "Thank You for Contacting MediConnect", html);
 

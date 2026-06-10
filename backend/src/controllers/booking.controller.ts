@@ -73,7 +73,7 @@ class BookingController {
 
             const finalAmount = noOfTravellers * packageExist.price;
 
-            const payment = await PaymentModel.create({
+            await PaymentModel.create({
                 bookingId: booking._id,
                 packageId: packageExist._id,
                 originalAmount: finalAmount,
@@ -82,8 +82,6 @@ class BookingController {
 
             res.status(201).send({
                 message: "Booking created successfully!",
-                booking: booking,
-                payment: payment,
                 success: true
             });
 
@@ -209,7 +207,6 @@ class BookingController {
                 destination: packageData?.destination,
                 noOfTravellers: packageData?.noOfTravellers,
                 travelDate: packageData.travelDate,
-                paymentId: paymentExist._id,
                 originalAmount: paymentExist.originalAmount,
                 discountAmount: paymentExist.discountAmount,
                 totalPaidAmount: paymentExist.finalAmount,
