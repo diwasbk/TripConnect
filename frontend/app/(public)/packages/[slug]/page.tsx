@@ -14,7 +14,7 @@ export default function Page() {
 
     return (
         <div>
-            <NavBar/>
+            <NavBar />
             <section className="mx-auto w-full max-w-7xl px-3 py-6 sm:px-6 sm:py-10 lg:px-8 bg-linear-to-br from-emerald-50 via-white to-lime-50">
                 <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                     <Link href="/packages" className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/70 px-4 py-2 text-sm font-semibold text-emerald-600 transition-colors hover:bg-emerald-50">
@@ -78,12 +78,12 @@ export default function Page() {
                                 </div>
                                 <div className="flex items-center justify-between text-sm text-slate-700">
                                     <span>Route code</span>
-                                    <span className="font-bold uppercase text-slate-900">{pkg?._id.replaceAll("-", " ")}</span>
+                                    <span className="font-bold uppercase text-slate-900">{pkg?.routeCode}</span>
                                 </div>
                             </div>
 
                             <Link
-                                href={`/booking?packageId=${pkg?._id}`}
+                                href={`/packages/${pkg?.slug}/booking`}
                                 className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-700/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-800"
                             >
                                 Continue to booking
@@ -95,7 +95,7 @@ export default function Page() {
                     </aside>
                 </div>
 
-                    <div className="mt-16 rounded-4xl border border-emerald-100 bg-white p-6 sm:p-8 lg:p-10 shadow-lg shadow-emerald-950/5">
+                <div className="mt-16 rounded-4xl border border-emerald-100 bg-white p-6 sm:p-8 lg:p-10 shadow-lg shadow-emerald-950/5">
                     <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">Your journey</p>
@@ -132,7 +132,7 @@ export default function Page() {
                     </p>
                     <div className="mt-6 flex flex-wrap justify-center gap-3">
                         <Link
-                            href={`/booking?package=${pkg?._id}`}
+                            href={`/packages/${pkg?.slug}/booking`}
                             className="inline-flex rounded-full bg-white px-7 py-3 text-sm font-semibold text-emerald-900 transition-colors hover:bg-emerald-50"
                         >
                             Book this package
@@ -143,7 +143,7 @@ export default function Page() {
                     </div>
                 </div>
             </section>
-            <Footer/>
+            <Footer />
         </div>
     );
 }
