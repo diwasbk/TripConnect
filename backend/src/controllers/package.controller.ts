@@ -104,6 +104,7 @@ class PackageController {
             });;
         };
     };
+    
     // Get Package By Slug
     getPackageBySlug = async (req: Request, res: Response) => {
         try {

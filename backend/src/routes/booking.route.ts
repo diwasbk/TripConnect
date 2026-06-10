@@ -9,7 +9,7 @@ const bookingController = new BookingController();
 
 bookingRouter.post("/:packageId", optionalAuthMiddleware, schemaValidateMiddleware(bookingSchema), bookingController.bookPackageByPackageId);
 bookingRouter.get("/all", bookingController.getAllBookingsByStatus);
-bookingRouter.get("/booking-id/:bookingId", bookingController.getBookingByBookingId);
+bookingRouter.get("/:bookingId", bookingController.getBookingByBookingId);
 bookingRouter.get("/booking-reference/:bookingReference", bookingController.getBookingByBookingReference);
 bookingRouter.get("/by-package-id/:packageId", bookingController.getAllBookingsByPackageId);
 bookingRouter.get("/by-user-id/:userId", bookingController.getAllBookingsByUserId);

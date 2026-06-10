@@ -167,7 +167,7 @@ export default function BookingSection() {
 
                         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                             <Link
-                                href={`/payment?paymentId=`}
+                                href={`/packages/${packageSlug}/booking/payment?bookingReference=TRIP410885`}
                                 className="inline-flex flex-1 items-center justify-center rounded-full bg-emerald-700 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-700/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-800"
                             >
                                 Continue to payment →

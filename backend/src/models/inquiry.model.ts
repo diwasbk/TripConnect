@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose"
 import { inquiryType } from "../types/inquiry.types";
 
 const inquirySchema: Schema = new mongoose.Schema<inquiryType>({
-    name: {
+    fullName: {
         type: String,
         required: true
     },      
@@ -10,7 +10,7 @@ const inquirySchema: Schema = new mongoose.Schema<inquiryType>({
         type: String,
         required: true
     },
-    phone: {
+    phoneNumber: {
         type: String,
         required: true
     },
