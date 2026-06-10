@@ -34,6 +34,24 @@ export const signupSchema = z.object({
 });
 export type signupType = z.infer<typeof signupSchema>;
 
+// Update User Schema
+export const updateUserSchema = z.object({
+    fullName: z
+        .string("Full name is required.")
+        .nonempty("Full name is required.")
+        .min(5, "Full name must be at least 5 characters."),
+    email: z
+        .string("Email is required.")
+        .nonempty("Email is required.")
+        .email({ message: "Invalid email." }),
+    phoneNumber: z
+        .string("Phone number is required.")
+        .nonempty("Phone number is required.")
+        .length(10, "Phone number must be exactly 10 digits.")
+        .regex(/^\d+$/, "Phone number must contain only digits")
+});
+export type updateUserType = z.infer<typeof updateUserSchema>;
+
 // Login Schema
 export const loginSchema = z.object({
     email: z

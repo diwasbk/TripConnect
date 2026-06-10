@@ -153,6 +153,39 @@ class AuthController {
         };
     };
 
+    // Update User Info By ID
+    updateUserInfoById = async (req: Request, res: Response) => {
+        try {
+            const { fullName, email, phoneNumber } = req.body;
+
+            const userExist = await UserModel.findOne({ _id: req.params.userId });
+
+            if (!userExist) {
+                return res.status(400).send({
+                    message: "User not found",
+                    success: false
+                });
+            };
+
+            await UserModel.findOneAndUpdate(
+                { _id: req.params.userId },
+                { $set: { fullName: fullName, email: email, phoneNumber: phoneNumber } }
+            );
+
+            res.status(200).send({
+                message: "Profile updated successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
+
     // Change Password
     changePassword = async (req: Request, res: Response) => {
         try {
