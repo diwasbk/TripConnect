@@ -10,6 +10,7 @@ const authController = new AuthController();
 authRouter.post("/signup", schemaValidateMiddleware(signupSchema), authController.signupUser);
 authRouter.post("/login", schemaValidateMiddleware(loginSchema), authController.loginUser);
 authRouter.get("/whoami", jwtAuthMiddleware, authController.whoAmI);
+authRouter.get("/user/:userId", jwtAuthMiddleware, authController.getUserById);
 authRouter.patch("/change-password", jwtAuthMiddleware, schemaValidateMiddleware(changePasswordSchema), authController.changePassword);
 authRouter.delete("/delete-account", jwtAuthMiddleware, schemaValidateMiddleware(loginSchema.pick({ password: true })), authController.deleteUserAccount);
 authRouter.post("/request-password-reset-email", schemaValidateMiddleware(requestPasswordResetEmailSchema), authController.requestPasswordResetEmail);
