@@ -6,6 +6,13 @@ const packageSchema: Schema = new mongoose.Schema<packageType>({
         type: String,
         required: true
     },
+    slug: {
+        type: String,
+        lowercase: true,
+        trim: true,
+        index: true,
+        required: true
+    },
     destination: {
         type: String,
         required: true
@@ -79,6 +86,10 @@ const packageSchema: Schema = new mongoose.Schema<packageType>({
             }
         }
     ],
+    totalBookings: {
+        type: Number,
+        default: 0
+    },
     status: {
         type: String,
         enum: ["draft", "published"],
