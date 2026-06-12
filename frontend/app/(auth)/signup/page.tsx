@@ -1,0 +1,13 @@
+import NavBar from "@/app/(public)/_components/navbar";
+import SignupSection from "./_components/signup-section";
+import Footer from "@/app/(public)/_components/footer";
+
+export default function HomePage() {
+    return (
+         <div className="relative bg-linear-to-br from-emerald-50 via-white to-lime-50">
+            <NavBar />
+            <SignupSection/>
+            <Footer/>
+        </div>
+    );
+}
