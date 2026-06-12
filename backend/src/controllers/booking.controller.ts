@@ -82,6 +82,7 @@ class BookingController {
 
             res.status(201).send({
                 message: "Booking created successfully!",
+                result: booking,
                 success: true
             });
 
@@ -205,10 +206,12 @@ class BookingController {
                 packageName: packageData.title,
                 duration: packageData?.duration,
                 destination: packageData?.destination,
-                noOfTravellers: packageData?.noOfTravellers,
-                travelDate: packageData.travelDate,
+                noOfTravellers: bookingExist?.noOfTravellers,
+                travelDate: bookingExist.travelDate,
+                pricePerTraveler: packageData.price,
                 originalAmount: paymentExist.originalAmount,
                 discountAmount: paymentExist.discountAmount,
+                discountPercentage: paymentExist.discountPercentage,
                 totalPaidAmount: paymentExist.finalAmount,
                 promoCode: promoCodeData?.code || null,
                 paymentMethod: paymentExist.paymentMethod,
