@@ -33,6 +33,26 @@ class SubscriberController {
             });
         };
     };
+
+    // Get All Subscribers
+    getAllSubscribers = async (req: Request, res: Response) => {
+        try {
+            const result = await SubscriberModel.find();
+
+            res.status(200).send({
+                message: result.length ? "Subscribers fetched successfully!." : "No subscribers found!",
+                result: result,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
+                success: true
+            });
+        };
+    };
 };
 
 export default SubscriberController;

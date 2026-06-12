@@ -7,5 +7,6 @@ const subscriberRouter = express.Router();
 const subscriberController = new SubscriberController();
 
 subscriberRouter.post("/create", schemaValidateMiddleware(subscriberSchema), subscriberController.createSubscriber);
+subscriberRouter.get("/all", subscriberController.getAllSubscribers);
 
 export default subscriberRouter;
