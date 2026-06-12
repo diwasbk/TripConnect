@@ -209,6 +209,7 @@ class BookingController {
                 noOfTravellers: bookingExist?.noOfTravellers,
                 travelDate: bookingExist.travelDate,
                 pricePerTraveler: packageData.price,
+                paymentId: paymentExist._id,
                 originalAmount: paymentExist.originalAmount,
                 discountAmount: paymentExist.discountAmount,
                 discountPercentage: paymentExist.discountPercentage,
@@ -233,7 +234,7 @@ class BookingController {
         };
     };
 
-    // Get All Booking By Package ID
+    // Get All Bookings By Package ID
     getAllBookingsByPackageId = async (req: Request, res: Response) => {
         try {
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });

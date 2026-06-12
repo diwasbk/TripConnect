@@ -6,6 +6,9 @@ export const gallerySchema = z.object({
         .string("Title is required.")
         .nonempty("Title is required.")
         .min(5, "Title must be at least 5 characters."),
+    slug: z
+        .string()
+        .optional(),
     caption: z
         .string("Caption is required.")
         .nonempty("Caption is required.")

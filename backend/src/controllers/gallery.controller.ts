@@ -7,8 +7,11 @@ class GalleryController {
         try {
             const { title, caption } = req.body;
 
+            const createdSlug = title.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
             const result = await GalleryModel.create({
                 title: title,
+                slug: createdSlug,
                 caption: caption,
                 photoUrls: []
             });
@@ -28,10 +31,10 @@ class GalleryController {
         };
     };
 
-    // Get Gallery By Gallery ID
-    getGalleryByGalleryId = async (req: Request, res: Response) => {
+    // Get Gallery By Slug
+    getGalleryBySlug = async (req: Request, res: Response) => {
         try {
-            const galleryExist = await GalleryModel.findOne({ _id: req.params.galleryId });
+            const galleryExist = await GalleryModel.findOne({slug: req.params.slug });
 
             if (!galleryExist) {
                 return res.status(404).send({
@@ -91,8 +94,8 @@ class GalleryController {
         };
     };
 
-    // Update Gallery By Gallery ID
-    updateGalleryByGalleryId = async (req: Request, res: Response) => {
+    // Update Gallery Info By Gallery ID
+    updateGalleryInfoByGalleryId = async (req: Request, res: Response) => {
         try {
             const galleryExist = await GalleryModel.findOne({ _id: req.params.galleryId });
 

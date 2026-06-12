@@ -21,8 +21,8 @@ class PromoCodeController {
 
             return res.status(201).send({
                 message: "PromoCode created successfully!",
-                success: true,
-                data: result,
+                result: result,
+                success: true
             });
 
         } catch (err: any) {
@@ -188,6 +188,14 @@ class PromoCodeController {
                 });
             };
 
+
+            if (paymentExist.promoCodeId!==null) {
+                return res.status(409).send({
+                    message: "PromoCode already applied!",
+                    success: false
+                });
+            };
+
             // Check if promo code exists
             const promoCodeExist = await PromoCodeModel.findOne({ code: req.body.code.toUpperCase() });
 
@@ -241,10 +249,13 @@ class PromoCodeController {
             // Send success response
             res.status(200).send({
                 message: "PromoCode applied successfully!",
-                originalAmount: paymentExist.originalAmount,
-                discountPercentage: promoCodeExist.discountPercentage,
-                discountAmount: discountAmount,
-                finalAmount: finalAmount,
+                result: {
+                    promoCode: promoCodeExist.code,
+                    originalAmount: paymentExist.originalAmount,
+                    discountPercentage: promoCodeExist.discountPercentage,
+                    discountAmount: discountAmount,
+                    finalAmount: finalAmount
+                },
                 success: true,
             });
 

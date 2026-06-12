@@ -6,6 +6,13 @@ const gallerySchema: Schema = new mongoose.Schema<galleryType>({
         type: String,
         required: true
     },
+    slug: {
+        type: String,
+        lowercase: true,
+        trim: true,
+        index: true,
+        required: true
+    },
     caption: {
         type: String,
         required: true
