@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Manrope } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -28,7 +29,9 @@ export default function RootLayout({
       lang="en"
       className={`${manrope.variable} ${ibmPlexMono.variable} h-full scroll-smooth antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
