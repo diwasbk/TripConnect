@@ -104,7 +104,7 @@ class PackageController {
             });;
         };
     };
-    
+
     // Get Package By Slug
     getPackageBySlug = async (req: Request, res: Response) => {
         try {
@@ -142,18 +142,15 @@ class PackageController {
 
         } catch (err: any) {
             console.error(err);
-
             res.status(500).send({
-                message: err.message
-                    ? `Internal server error: ${err.message}`
-                    : "Internal server error!",
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
                 success: false
             });
         };
     };
 
-    // Get Package By ID
-    getPackageById = async (req: Request, res: Response) => {
+    // Get Single Package By ID
+    getSinglePackageById = async (req: Request, res: Response) => {
         try {
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
@@ -179,8 +176,8 @@ class PackageController {
         };
     };
 
-    // Delete Package By ID
-    deletePackageById = async (req: Request, res: Response) => {
+    // Delete Single Package By ID
+    deleteSinglePackageById = async (req: Request, res: Response) => {
         try {
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
@@ -558,7 +555,7 @@ class PackageController {
             };
 
             res.status(200).send({
-                message: packageExist.departures.length ? "Package departures fetched successfully!" : "Package departured not found!",
+                message: packageExist.departures.length ? "Package departures fetched successfully!" : "Package departure not found!",
                 result: packageExist.departures,
                 success: true
             });
@@ -719,7 +716,7 @@ class PackageController {
     };
 
     // Activate or Deactivate Package By ID
-    activateORdeactivatePackagebyId = async (req: Request, res: Response) => {
+    activateORdeactivatePackageById = async (req: Request, res: Response) => {
         try {
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 

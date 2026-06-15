@@ -11,12 +11,12 @@ packageRouter.get("/all", packageController.getAllPackagesByStatus);
 packageRouter.get("/live", packageController.getAllLivePackages);
 packageRouter.get("/top-booked", packageController.getTopBookedPackages);
 packageRouter.get("/:slug", packageController.getPackageBySlug);
-packageRouter.get("/:packageId", packageController.getPackageById);
+packageRouter.get("/:packageId", packageController.getSinglePackageById);
 packageRouter.post("/create-basic-info", schemaValidateMiddleware(packageBasicInfoSchema), packageController.createPackageBasicInfo);
 packageRouter.put("/update-basic-info/:packageId", schemaValidateMiddleware(packageBasicInfoSchema.partial()), packageController.updatePackageBasicInfoById);
 packageRouter.put("/upload-photo/:packageId", upload.single("myfile"), packageController.uploadPackagePhotosByPackageId);
 packageRouter.delete("/delete-photo/:packageId", packageController.deletePackagePhotoByPackageId);
-packageRouter.delete("/delete/:packageId", packageController.deletePackageById);
+packageRouter.delete("/delete/:packageId", packageController.deleteSinglePackageById);
 
 packageRouter.put("/itinerary/add/:packageId", schemaValidateMiddleware(itinerarySchema), packageController.addPackageItineraryByPackageId);
 packageRouter.get("/itinerary/:packageId", packageController.getPackageItineraryByPackageId);
@@ -29,6 +29,6 @@ packageRouter.put("/departure/update/:packageId/:departureId", schemaValidateMid
 packageRouter.delete("/departure/delete/:packageId/:departureId", packageController.deleteDepartureByDepartureId);
 
 packageRouter.patch("/publish/:packageId", packageController.publishPackageByPackageID);
-packageRouter.patch("/activate-deactivate/:packageId/:isActive", packageController.activateORdeactivatePackagebyId);
+packageRouter.patch("/activate-deactivate/:packageId/:isActive", packageController.activateORdeactivatePackageById);
 
 export default packageRouter;

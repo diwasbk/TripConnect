@@ -27,7 +27,7 @@ export const bookingSchema = z.object({
         .regex(/^\d+$/, "Phone number must contain only digits"),
     travelDate: z
         .coerce.date("Date is required."),
-    noOfTravellers: z
+    noOfTravelers: z
         .number()
         .min(1, {
             message: "At least 1 traveller is required."

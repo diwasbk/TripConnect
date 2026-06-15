@@ -119,7 +119,7 @@ class PaymentController {
         };
     };
 
-    // Initialize Esewa Payment
+    // Initialize eSewa Payment
     initializeEsewaPayment = async (req: Request, res: Response) => {
         try {
             const paymentExist = await PaymentModel.findOne({ _id: req.params.paymentId }).populate("packageId");
@@ -163,7 +163,7 @@ class PaymentController {
         };
     };
 
-    // Verify Esewa Payment
+    // Verify eSewa Payment
     verifyEsewaPayment = async (req: Request, res: Response) => {
         try {
             const { data } = req.query;
@@ -220,7 +220,7 @@ class PaymentController {
                         packageName: packageData.title,
                         duration: packageData?.duration,
                         destination: packageData?.destination,
-                        noOfTravellers: packageData?.noOfTravellers,
+                        noOfTravelers: packageData?.noOfTravelers,
                         travelDate: packageData.travelDate,
                         originalAmount: paymentExist.originalAmount,
                         discountAmount: paymentExist.discountAmount,

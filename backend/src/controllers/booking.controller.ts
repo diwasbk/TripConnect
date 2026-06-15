@@ -34,7 +34,7 @@ class BookingController {
 
             const bookingReference = await generateBookingReference();
 
-            const { fullName, email, phoneNumber, travelDate, noOfTravellers, specialRequest } = req.body;
+            const { fullName, email, phoneNumber, travelDate, noOfTravelers, specialRequest } = req.body;
 
             const selectedDeparture = packageExist.departures.find(dep =>
                 new Date(dep.date).toDateString() === new Date(travelDate).toDateString()
@@ -47,7 +47,7 @@ class BookingController {
                 });
             };
 
-            if (selectedDeparture.availableSeats < noOfTravellers) {
+            if (selectedDeparture.availableSeats < noOfTravelers) {
                 return res.status(400).send({
                     message: `Sorry, only ${selectedDeparture.availableSeats} seat(s) are available for the selected departure date.`,
                     success: false
@@ -62,16 +62,16 @@ class BookingController {
                 email: email,
                 phoneNumber: phoneNumber,
                 travelDate: travelDate,
-                noOfTravellers: noOfTravellers,
+                noOfTravelers: noOfTravelers,
                 specialRequest: specialRequest,
                 isGuest: isGuest
             });
 
-            selectedDeparture.availableSeats -= noOfTravellers;
+            selectedDeparture.availableSeats -= noOfTravelers;
 
             await packageExist.save();
 
-            const finalAmount = noOfTravellers * packageExist.price;
+            const finalAmount = noOfTravelers * packageExist.price;
 
             await PaymentModel.create({
                 bookingId: booking._id,
@@ -204,9 +204,11 @@ class BookingController {
                 bookingDate: bookingExist?.createdAt,
                 bookingReference: bookingExist.bookingReference,
                 packageName: packageData.title,
+                slug: packageData.slug,
                 duration: packageData?.duration,
                 destination: packageData?.destination,
-                noOfTravellers: bookingExist?.noOfTravellers,
+                includes: packageData.includes,
+                noOfTravelers: bookingExist?.noOfTravelers,
                 travelDate: bookingExist.travelDate,
                 pricePerTraveler: packageData.price,
                 paymentId: paymentExist._id,

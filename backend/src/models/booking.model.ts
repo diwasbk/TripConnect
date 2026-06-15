@@ -33,7 +33,7 @@ const bookingSchema: Schema = new mongoose.Schema<bookingType>({
         type: Date,
         required: true
     },
-    noOfTravellers: {
+    noOfTravelers: {
         type: Number,
         default: 1
     },
