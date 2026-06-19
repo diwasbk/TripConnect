@@ -33,6 +33,12 @@ export const footerLinks = {
     ],
 };
 
+export const heroStats = [
+    { value: "2,500+", label: "Travelers hosted" },
+    { value: "4.9/5", label: "Verified reviews" },
+    { value: "24/7", label: "Local support" },
+];
+
 export const socialLinks = [
     { name: "Facebook", href: "#", icon: "f" },
     { name: "Instagram", href: "#", icon: "i" },
