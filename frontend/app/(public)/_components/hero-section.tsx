@@ -1,7 +1,38 @@
-import { heroStats, packages } from "@/lib/_content";
+"use client";
 import Link from "next/link";
+import { heroStats } from "@/lib/constants/constant";
+import { useEffect, useState } from "react";
+import { handleGetTopBookedPackages } from "@/lib/actions/package-action";
+import { toast } from "react-toastify";
+import { API_BASE_URL } from "@/lib/config";
 
 export default function HeroSection() {
+    const [packages, setPackages] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPackages = async () => {
+            try {
+                const res = await handleGetTopBookedPackages();
+                
+                if (res.success) {
+                    setPackages(res.result);
+
+                } else {
+                    throw new Error(res.message || "Failed to fetch packages!");
+                };
+
+            } catch (err: any) {
+                toast.error(err.message || "Failed to fetch packages!");
+
+            } finally {
+                setLoading(false);
+            };
+        };
+
+        fetchPackages();
+    }, []);
+
     return (
         <div>
             <section className="relative overflow-hidden">
@@ -50,29 +81,31 @@ export default function HeroSection() {
                         <div className="grid gap-5 lg:justify-self-end">
                             <article className="card-reveal flex h-auto flex-col overflow-hidden rounded-4xl border border-white/70 bg-white p-4 shadow-[0_20px_40px_rgba(15,122,75,0.14)] lg:h-140 lg:w-130">
                                 <img
-                                    src={packages[0].photoUrls[0]}
-                                    alt={packages[0].title}
+                                    src={`${API_BASE_URL}/${packages[0]?.photoUrls[0]}`}
+                                    alt={packages[0]?.title}
                                     className="h-96 w-full rounded-3xl object-cover lg:h-80"
                                 />
                                 <div className="mt-5 flex flex-1 flex-col justify-between space-y-4">
                                     <div className="space-y-2">
                                         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-700">Featured package</p>
-                                        <h2 className="mt-3 text-2xl font-black text-slate-950">{packages[0].title}</h2>
-                                        <p className="mt-2 text-sm leading-6 text-slate-600">{packages[0].description}</p>
+                                        <h2 className="mt-3 text-2xl font-black text-slate-950">{packages[0]?.title}</h2>
+                                        <p className="mt-2 text-sm leading-6 text-slate-600 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+                                            {packages[0]?.description}
+                                        </p>
                                     </div>
                                     <div className="flex flex-col gap-3 border-t border-emerald-100 pt-2 sm:flex-row sm:items-center sm:justify-between">
                                         <div className="flex flex-wrap gap-2 pt-1">
                                             <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-800">
-                                                {packages[0].duration}
+                                                {packages[0]?.duration}
                                             </span>
                                         </div>
 
                                         <div className="flex items-baseline gap-2">
                                             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">From</p>
-                                            <p className="text-lg font-black text-emerald-900">{packages[0].price}</p>
+                                            <p className="text-lg font-black text-emerald-900">{packages[0]?.price}</p>
                                         </div>
                                         <Link
-                                            href={`/packages/${packages[0].slug}`}
+                                            href={`/packages/${packages[0]?.slug}`}
                                             className="inline-flex w-full justify-center shrink-0 rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-emerald-800 sm:w-auto"
                                         >
                                             Explore Package
@@ -104,7 +137,7 @@ export default function HeroSection() {
                                 className={`card-reveal overflow-hidden rounded-4xl border border-emerald-100 bg-white shadow-md shadow-emerald-950/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-950/10 card-delay-${(index % 5) + 1}`}
                             >
                                 <div className="relative">
-                                    <img src={pkg.photoUrls[0]} alt={pkg.title} className="h-52 w-full object-cover" />
+                                    <img src={`${API_BASE_URL}/${pkg?.photoUrls[0]}`} alt={pkg.title} className="h-52 w-full object-cover" />
                                     <div className="absolute inset-0 bg-linear-to-t from-slate-950/70 via-transparent to-transparent" />
                                     <div className="absolute bottom-4 left-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-800">
                                         {pkg.duration}

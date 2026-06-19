@@ -1,10 +1,43 @@
 import Link from "next/link";
-import NewsLetterSection from "./news-letter-section";
-import { footerLinks, socialLinks } from "@/lib/constants/constant";
+import NewsLetterSection from "./news-letter";
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
-    
+
+    const footerLinks = {
+        product: [
+            { label: "Packages", href: "/packages" },
+            { label: "Destinations", href: "/destinations" },
+            { label: "About Us", href: "/about" },
+            { label: "Contact", href: "/contact" },
+        ],
+        company: [
+            { label: "About", href: "/about" },
+            { label: "Gallery", href: "/gallery" },
+            { label: "Careers", href: "/careers" },
+            { label: "Press", href: "/press" },
+        ],
+        support: [
+            { label: "Help Center", href: "#" },
+            { label: "FAQ", href: "#" },
+            { label: "Support", href: "/contact" },
+            { label: "Booking", href: "/booking" },
+        ],
+        legal: [
+            { label: "Privacy Policy", href: "#" },
+            { label: "Terms of Service", href: "#" },
+            { label: "Cookie Policy", href: "#" },
+            { label: "Refund Policy", href: "#" },
+        ],
+    };
+
+    const socialLinks = [
+        { name: "Facebook", href: "#", icon: "f" },
+        { name: "Instagram", href: "#", icon: "i" },
+        { name: "Twitter", href: "#", icon: "t" },
+        { name: "LinkedIn", href: "#", icon: "in" },
+    ];
+
     return (
         <footer className="border-t border-emerald-950/10 bg-linear-to-b from-white via-emerald-50/30 to-white">
             <NewsLetterSection />

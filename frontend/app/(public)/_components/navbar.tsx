@@ -1,18 +1,26 @@
 "use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { navLinks } from "@/lib/constants/constant";
+import { Backpack } from "lucide-react";
+
+const navLinks = [
+    { label: "Home", href: "/home" },
+    { label: "Packages", href: "/packages" },
+    { label: "Gallery", href: "/gallery" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+];
 
 export default function NavBar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [hoveredHref, setHoveredHref] = useState<string | null>(null);
     const pathname = usePathname();
 
     const isActiveLink = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(href));
 
     const navLinkClassName = (href: string) =>
-        `rounded-full px-4 py-2 transition-colors ${hoveredHref === href || (isActiveLink(href) && !hoveredHref) ? "bg-emerald-50 text-emerald-800" : "hover:bg-emerald-50 hover:text-emerald-800"
+        `rounded-full px-4 py-2 transition-colors ${isActiveLink(href) ? "bg-emerald-50 text-emerald-800" : "hover:bg-emerald-50 hover:text-emerald-800"
         }`;
 
     const mobileNavLinkClassName = (href: string) =>
@@ -23,9 +31,9 @@ export default function NavBar() {
         <header className="sticky top-0 z-40 border-b border-emerald-500/10 bg-white/85 backdrop-blur-xl">
             <div className="mx-auto flex w-full items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
                 <Link href="/" className="group flex items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-700 text-sm font-black text-white shadow-lg shadow-emerald-700/25 transition-transform duration-300 group-hover:-translate-y-0.5">
-                        TC
-                    </span>
+                    <div className="rounded-lg bg-emerald-600 p-2 text-white sm:rounded-xl sm:p-2.5 shadow-sm flex-shrink-0">
+                        <Backpack size={20} className="sm:size-5" />
+                    </div>
                     <div>
                         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-700">TripConnect</p>
                         <p className="text-sm text-slate-600">Nepal travel specialists</p>
@@ -37,8 +45,6 @@ export default function NavBar() {
                         <Link
                             key={item.label}
                             href={item.href}
-                            onMouseEnter={() => setHoveredHref(item.href)}
-                            onMouseLeave={() => setHoveredHref(null)}
                             aria-current={isActiveLink(item.href) ? "page" : undefined}
                             className={navLinkClassName(item.href)}
                         >
