@@ -1,32 +1,86 @@
 "use client";
+import { handleGetBookingByBookingReference } from "@/lib/actions/booking-action";
+import { handleApplyPromoCodeByPaymentId } from "@/lib/actions/promocode-action";
+import { promoCodeSchema, promoCodeType } from "@/lib/schemas/promocode.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { FiCheckCircle } from "react-icons/fi";
+import { toast } from "react-toastify";
 
-export default function PaymentSection() {
+export default function PaymentSection({ navUrl }: { navUrl: string }) {
     const searchParams = useSearchParams();
-    const bookingReference = searchParams.get("bookingReference");
+    const bookingReference = searchParams.get("bookingReference") as string;
 
     const params = useParams();
     const packageSlug = params?.slug as string;
 
-    const selectedPackageTitle = "Pokhara Relax Trip";
-    const selectedPackageDuration = "2 nights / 3 days";
-    const selectedPackageDestination = "Pokhara, Nepal";
-    const pricePerTraveler = 14200;
-    const travelerCount = 1;
-    const promoCodeId = "None";
-    const discountPercentage = 0;
+    const [bookingDetail, setBookingDetail] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-    const subtotal = pricePerTraveler * travelerCount;
-    const discountAmount = 0;
-    const totalAfterDiscount = subtotal - discountAmount;
+    useEffect(() => {
+        const fetchBookingDetail = async () => {
+            try {
+                const res = await handleGetBookingByBookingReference(bookingReference);
+
+                if (res.success) {
+                    setBookingDetail(res.result);
+
+                } else {
+                    throw new Error(res.message || "Failed to fetch booking details!");
+                };
+
+            } catch (err: any) {
+                toast.error(err.message || "Failed to fetch booking details!");
+
+            } finally {
+                setLoading(false)
+            };
+        };
+        fetchBookingDetail();
+    }, []);
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isSubmitting }
+    } = useForm<promoCodeType>({ resolver: zodResolver(promoCodeSchema) });
+
+    const onSubmit = async (data: promoCodeType) => {
+        try {
+            const res = await handleApplyPromoCodeByPaymentId(bookingDetail?.paymentId, data);
+
+            if (!res.success) {
+                throw new Error(res.message || "Failed to apply promocode!");
+            };
+
+            // Update bookingDetail with the new promo code and discount values
+            setBookingDetail((prev: any) => ({
+                ...prev,
+                promoCode: res.result?.promoCode,
+                discountPercentage: res.result?.discountPercentage,
+                discountAmount: res.result?.discountAmount,
+                totalPaidAmount: res.result?.finalAmount,
+                originalAmount: res.result?.originalAmount,
+            }));
+
+            toast.success(res.message || "Promocode applied successful!");
+
+            reset();
+
+        } catch (err: any) {
+            toast.error(err.message || "Failed to apply promocode!");
+        };
+    };
 
     const summaryRows = [
-        { label: "Price per traveler", value: `Rs ${pricePerTraveler.toLocaleString("en-US")}` },
-        { label: "Travelers", value: String(travelerCount) },
-        { label: "Promo code", value: promoCodeId },
-        { label: "Discount %", value: `${discountPercentage}%` },
+        { label: "Price per traveler", value: `Rs ${bookingDetail?.pricePerTraveler?.toLocaleString("en-US") || "0"}` },
+        { label: "Travelers", value: String(bookingDetail?.noOfTravelers || "N/A") },
+        { label: "Discount %", value: `${bookingDetail?.discountPercentage}%` },
+        { label: "Promo code", value: bookingDetail?.promoCode || "N/A" }
     ];
     return (
         <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -47,10 +101,10 @@ export default function PaymentSection() {
                         <h2 className="font-semibold text-emerald-900 text-2xl mt-5">Booking Summary</h2>
 
                         <div className="flex items-center gap-2 text-slate-800">
-                            <span className="text-sm font-semibold tracking-tight sm:text-[15px]">{selectedPackageTitle}</span>
+                            <span className="text-sm font-semibold tracking-tight sm:text-[15px]">{bookingDetail?.packageName}</span>
                             <span className="hidden sm:block h-4 w-px bg-emerald-100 mx-3" aria-hidden />
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50/60 px-2 py-0.5 text-xs font-medium text-emerald-800">{selectedPackageDuration}</span>
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50/60 px-2 py-0.5 text-xs font-medium text-emerald-800">{selectedPackageDestination}</span>
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50/60 px-2 py-0.5 text-xs font-medium text-emerald-800">{bookingDetail?.duration}</span>
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50/60 px-2 py-0.5 text-xs font-medium text-emerald-800">{bookingDetail?.destination}</span>
                         </div>
                     </div>
 
@@ -72,15 +126,15 @@ export default function PaymentSection() {
                             <div className="flex flex-col gap-1 text-sm text-slate-600">
                                 <div className="flex items-center justify-between">
                                     <span className="font-medium text-slate-800">Subtotal</span>
-                                    <span className="text-base font-semibold text-emerald-800">Rs {subtotal.toLocaleString("en-US")}</span>
+                                    <span className="text-base font-semibold text-emerald-800">Rs {bookingDetail?.originalAmount?.toLocaleString("en-US") || "0"}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="font-medium text-slate-800">Discount</span>
-                                    <span className="text-base font-semibold text-emerald-800">- Rs {discountAmount.toLocaleString("en-US")}</span>
+                                    <span className="text-base font-semibold text-emerald-800">- Rs {bookingDetail?.discountAmount?.toLocaleString("en-US") || "0"}</span>
                                 </div>
                                 <div className="flex items-center justify-between border-t border-emerald-100 pt-2">
                                     <span className="font-medium text-slate-800">Total</span>
-                                    <span className="text-xl font-extrabold tracking-tight text-emerald-900">Rs {totalAfterDiscount.toLocaleString("en-US")}</span>
+                                    <span className="text-xl font-extrabold tracking-tight text-emerald-900">Rs {bookingDetail?.totalPaidAmount?.toLocaleString("en-US") || "0"}</span>
                                 </div>
                             </div>
                         </div>
@@ -94,28 +148,40 @@ export default function PaymentSection() {
                             <div className="text-sm text-slate-500 hidden sm:block">Enter code to unlock discounts</div>
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            <div className="flex w-full max-w-xs items-center rounded-2xl border border-emerald-200 bg-emerald-100/50 px-3 py-1">
-                                <input
-                                    type="text"
-                                    name="promoCode"
-                                    placeholder="Enter promo code"
-                                    className="h-8 w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 outline-none"
-                                    aria-label="Promo code (design only)"
-                                />
-                            </div>
+                        <form
+                            onSubmit={handleSubmit(onSubmit)}
+                            className="flex flex-col gap-1"
+                        >
+                            {/* INPUT + BUTTON ROW */}
+                            <div className="flex items-start gap-3">
+                                <div className="flex flex-col w-full max-w-xs">
+                                    <div className="flex flex-wrap items-center rounded-full border border-emerald-200 bg-emerald-100/50 px-3 py-1">
+                                        <input
+                                            {...register("code")}
+                                            type="text"
+                                            placeholder="Enter promo code"
+                                            className="h-8 w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 outline-none"
+                                            aria-label="Promo code (design only)"
+                                        />
+                                    </div>
+                                </div>
 
-                            <button
-                                type="button"
-                                className="h-9 rounded-2xl border border-emerald-200 bg-white px-4 text-sm font-semibold text-emerald-700 shadow-sm shadow-emerald-950/5 hover:cursor-pointer"
-                            >
-                                Apply
-                            </button>
-                        </div>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className={`h-10 rounded-full border border-emerald-200 bg-white px-4 text-sm font-semibold text-emerald-700 shadow-sm shadow-emerald-950/5 ${isSubmitting ? "opacity-50" : "hover:cursor-pointer hover:bg-emerald-100"}`}
+                                >
+                                    {isSubmitting ? "Validating" : "Apply"}
+                                </button>
+                            </div>
+                            {errors.code && (
+                                <p className="text-xs font-medium text-red-500">{errors.code.message}</p>
+                            )}
+                        </form>
                     </div>
                     <div className="space-y-4 px-4 py-4 sm:px-5 sm:py-5">
                         <Link
-                            href={`/packages/${packageSlug}/booking/payment/success`}
+                            href={`${navUrl}packages/${packageSlug}/booking/payment/success?bookingReference=${bookingReference}`}
                             className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-emerald-700 to-emerald-800 px-6 text-base font-semibold text-white shadow-[0_18px_35px_rgba(15,122,75,0.22)] transition-all duration-300 hover:-translate-y-0.5 hover:from-emerald-800 hover:to-emerald-900 hover:cursor-pointer"
                         >
                             <img src="/images/esewa.png" alt="eSewa" className="h-5 w-5 object-contain mr-2" />

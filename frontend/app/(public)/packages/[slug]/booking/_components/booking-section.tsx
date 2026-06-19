@@ -1,19 +1,32 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { FiShield } from "react-icons/fi";
-import { packages } from "@/lib/_content";
+import { handleGetPackagesBySlug } from "@/lib/actions/package-action";
+import { API_BASE_URL } from "@/lib/config";
+import { useForm } from "react-hook-form";
+import { bookingSchema, bookingType } from "@/lib/schemas/booking.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { handleCreateBookingByPackageId } from "@/lib/actions/booking-action";
+import { toast } from "react-toastify";
+import { handleWhoAmI } from "@/lib/actions/auth-action";
 
 const amountFormatter = new Intl.NumberFormat("en-NP", {
     maximumFractionDigits: 0,
 });
 
-function parsePackagePrice(price: string | undefined) {
+function parsePackagePrice(price: string | number | undefined) {
     if (!price) {
         return 0;
-    }
+    };
 
+    // If the API already returned a clean number, use it directly
+    if (typeof price === "number") {
+        return price;
+    };
+
+    // If it's a string, safely strip out non-digits
     const numericValue = Number(price.replace(/[^\d]/g, ""));
     return Number.isFinite(numericValue) ? numericValue : 0;
 };
@@ -22,28 +35,91 @@ function formatCurrency(amount: number) {
     return `NPR ${amountFormatter.format(amount)}`;
 };
 
-export default function BookingSection() {
+export default function BookingSection({ navUrl }: { navUrl: string }) {
     const params = useParams();
     const packageSlug = params?.slug as string;
 
-    const [travelerCount, setTravelerCount] = useState("1");
+    const [pkg, setPackage] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-    const selectedPackage = packages.find((item) => item.slug === packageSlug) ?? packages[0];
+    const router = useRouter();
 
-    const travelerTotal = Math.max(1, Number(travelerCount) || 1);
-    const packagePrice = parsePackagePrice(selectedPackage?.price);
+    useEffect(() => {
+        const fetchPackage = async () => {
+            try {
+                const res = await handleGetPackagesBySlug(packageSlug);
+
+                if (res.success) {
+                    setPackage(res.result);
+
+                } else {
+                    throw new Error(res.message || "Failed to fetch packages!");
+                };
+
+            } catch (err: any) {
+                console.error(err.message || "Failed to fetch packages!");
+
+            } finally {
+                setLoading(false);
+            };
+        };
+
+        fetchPackage();
+    }, []);
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors, isSubmitting }
+    } = useForm<bookingType>(
+        {
+            resolver: zodResolver(bookingSchema),
+            defaultValues: async () => {
+                const res = await handleWhoAmI();
+                return {
+                    fullName: res.result?.fullName ?? "",
+                    email: res.result?.email ?? "",
+                    phoneNumber: res.result?.phoneNumber ?? "",
+                    travelDate: "", // required
+                    noOfTravelers: 1,
+                    specialRequest: "",
+                };
+            },
+        }
+    );
+
+    const onSubmit = async (data: bookingType) => {
+        try {
+            const res = await handleCreateBookingByPackageId(pkg?._id, data);
+
+            if (!res.success) {
+                throw new Error(res.message || "Failed to create booking!");
+            };
+
+            toast.success(res.message || "Booking created successful!");
+            
+            router.push(`${navUrl}packages/${pkg?.slug}/booking/payment?bookingReference=${res.result.bookingReference}`);
+
+        } catch (err: any) {
+            toast.error(err.message || "Failed to create booking!");
+        };
+    };
+
+    const travelerTotal = watch("noOfTravelers", 1) || 1;
+    const packagePrice = parsePackagePrice(pkg?.price);
     const totalPrice = packagePrice * travelerTotal;
 
     return (
-       <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-                <Link
-                    href="/packages"
-                    className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm shadow-emerald-950/5 backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-50"
+                <button
+                    onClick={() => { router.back() }}
+                    className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm shadow-emerald-950/5 backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-50 cursor-pointer"
                 >
                     <span>←</span>
-                    <span>Back to packages</span>
-                </Link>
+                    <span>Back</span>
+                </button>
                 <p className="rounded-full border border-emerald-100 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700 shadow-sm shadow-emerald-950/5">
                     Booking step 1 of 2
                 </p>
@@ -58,13 +134,14 @@ export default function BookingSection() {
                         </p>
                     </div>
 
-                    <form className="rounded-4xl border border-emerald-100 bg-white p-6 shadow-lg shadow-emerald-950/5 sm:p-8">
+                    <form onSubmit={handleSubmit(onSubmit)} className="rounded-4xl border border-emerald-100 bg-white p-6 shadow-lg shadow-emerald-950/5 sm:p-8">
                         <div className="grid gap-5 sm:grid-cols-2">
                             <div className="space-y-2 sm:col-span-2">
                                 <label htmlFor="full-name" className="text-sm font-semibold text-slate-800">
                                     Full name
                                 </label>
                                 <input
+                                    {...register("fullName")}
                                     id="full-name"
                                     name="fullName"
                                     type="text"
@@ -72,6 +149,9 @@ export default function BookingSection() {
                                     className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                     placeholder="Enter your full name"
                                 />
+                                {errors.fullName && (
+                                    <p className="text-xs font-medium text-red-500">{errors.fullName?.message}</p>
+                                )}
                             </div>
 
                             <div className="space-y-2">
@@ -79,13 +159,16 @@ export default function BookingSection() {
                                     Email address
                                 </label>
                                 <input
+                                    {...register("email")}
                                     id="email-address"
                                     name="email"
-                                    type="email"
                                     autoComplete="email"
                                     className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                     placeholder="name@example.com"
                                 />
+                                {errors.email && (
+                                    <p className="text-xs font-medium text-red-500">{errors.email?.message}</p>
+                                )}
                             </div>
 
                             <div className="space-y-2">
@@ -93,6 +176,7 @@ export default function BookingSection() {
                                     Phone number
                                 </label>
                                 <input
+                                    {...register("phoneNumber")}
                                     id="phone-number"
                                     name="phoneNumber"
                                     type="tel"
@@ -100,6 +184,9 @@ export default function BookingSection() {
                                     className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                     placeholder="98XX XXX XXX"
                                 />
+                                {errors.phoneNumber && (
+                                    <p className="text-xs font-medium text-red-500">{errors.phoneNumber?.message}</p>
+                                )}
                             </div>
 
                             <div className="space-y-2">
@@ -107,11 +194,21 @@ export default function BookingSection() {
                                     Travel date
                                 </label>
                                 <input
+                                    {...register("travelDate")}
                                     id="travel-date"
                                     name="travelDate"
                                     type="date"
                                     className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                 />
+                                {errors.travelDate && (
+                                    <p className="text-xs font-medium text-red-500">{errors.travelDate?.message}</p>
+                                )}
+                                <p className="text-xs text-slate-900">
+                                    Available departures:{" "}
+                                    {pkg?.departures?.map((d: any) =>
+                                        new Date(d.date).toLocaleDateString()
+                                    ).join(", ")}
+                                </p>
                             </div>
 
                             <div className="space-y-2">
@@ -119,23 +216,25 @@ export default function BookingSection() {
                                     Number of travelers
                                 </label>
                                 <input
+                                    {...register("noOfTravelers", {
+                                        valueAsNumber: true,
+                                    })}
                                     id="travelers"
-                                    name="travelerCount"
                                     type="number"
-                                    min="1"
-                                    value={travelerCount}
-                                    onChange={(event) => setTravelerCount(event.target.value)}
                                     className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                     placeholder="1"
                                 />
+                                {errors.noOfTravelers && (
+                                    <p className="text-xs font-medium text-red-500">{errors.noOfTravelers?.message}</p>
+                                )}
                             </div>
 
                             <div className="space-y-2 sm:col-span-2">
                                 <label className="text-sm font-semibold text-slate-800">Package</label>
                                 <div className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950">
-                                    {selectedPackage?.title}
+                                    {pkg?.title}
                                 </div>
-                                <input type="hidden" name="packageId" value={selectedPackage?._id ?? ""} />
+                                <input type="hidden" name="packageId" value={pkg?._id ?? ""} />
                             </div>
 
                             <div className="space-y-2 sm:col-span-2">
@@ -143,11 +242,14 @@ export default function BookingSection() {
                                     Special requests
                                 </label>
                                 <textarea
+                                    {...register("specialRequest")}
                                     id="special-requests"
-                                    name="specialRequests"
                                     className="min-h-32 w-full rounded-3xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                     placeholder="Pickup preferences, room type, dietary notes, or anything else we should know"
                                 />
+                                {errors.specialRequest && (
+                                    <p className="text-xs font-medium text-red-500">{errors.specialRequest?.message}</p>
+                                )}
                             </div>
                         </div>
 
@@ -166,14 +268,15 @@ export default function BookingSection() {
                         </div>
 
                         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                            <Link
-                                href={`/packages/${packageSlug}/booking/payment?bookingReference=TRIP410885`}
-                                className="inline-flex flex-1 items-center justify-center rounded-full bg-emerald-700 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-700/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-800"
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className={`inline-flex flex-1 items-center justify-center rounded-full bg-emerald-700 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-700/25 transition-all duration-300 ${isSubmitting ? "opacity-50" : "hover:-translate-y-0.5 hover:bg-emerald-800 cursor-pointer"}`}
                             >
                                 Continue to payment →
-                            </Link>
+                            </button>
                             <Link
-                                href={`/packages/${selectedPackage?.slug ?? ""}`}
+                                href={`/packages/${pkg?.slug ?? ""}`}
                                 className="inline-flex items-center justify-center rounded-full border border-emerald-200 bg-white px-6 py-3.5 text-sm font-semibold text-emerald-900 transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-50"
                             >
                                 Review package
@@ -186,32 +289,32 @@ export default function BookingSection() {
                     <div className="overflow-hidden rounded-4xl border border-emerald-100 bg-white shadow-xl shadow-emerald-900/5">
                         <div className="relative">
                             <img
-                                src={selectedPackage?.photoUrls?.[0]}
-                                alt={selectedPackage?.title}
+                                src={`${API_BASE_URL}/${pkg?.photoUrls[0]}`}
+                                alt={pkg?.title}
                                 className="h-56 w-full object-cover"
                             />
                             <div className="absolute inset-0 bg-linear-to-t from-slate-950/75 via-slate-950/10 to-transparent" />
                             <div className="absolute inset-x-0 bottom-0 p-5 text-white">
                                 <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-100">Your trip</p>
-                                <h2 className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">{selectedPackage?.title}</h2>
-                                <p className="mt-2 text-sm text-emerald-50/90">{selectedPackage?.destination}</p>
+                                <h2 className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">{pkg?.title}</h2>
+                                <p className="mt-2 text-sm text-emerald-50/90">{pkg?.destination}</p>
                             </div>
                         </div>
 
                         <div className="space-y-5 p-5 sm:p-6">
                             <div className="flex flex-wrap gap-2">
                                 <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-800">
-                                    {selectedPackage?.duration}
+                                    {pkg?.duration}
                                 </span>
                                 <span className="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-800">
-                                    {selectedPackage?.includes?.length ?? 0} inclusions
+                                    {pkg?.includes?.length ?? 0} inclusions
                                 </span>
                             </div>
 
                             <div className="space-y-3 rounded-3xl border border-emerald-100 bg-emerald-50/60 p-4 sm:p-5">
                                 <div className="flex items-center justify-between gap-4 text-sm text-slate-700">
                                     <span>Price per traveler</span>
-                                    <span className="font-bold text-emerald-900">{selectedPackage?.price}</span>
+                                    <span className="font-bold text-emerald-900">{pkg?.price}</span>
                                 </div>
                                 <div className="flex items-center justify-between gap-4 text-sm text-slate-700">
                                     <span>Travelers</span>
