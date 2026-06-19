@@ -1,4 +1,38 @@
+"use client";
+import { handleSendInquiry } from "@/lib/actions/inquiry-action";
+import { inquirySchema, inquiryType } from "@/lib/schemas/inquiry.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+
 export default function ContactSection() {
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isSubmitting }
+    } = useForm<inquiryType>(
+        {
+            resolver: zodResolver(inquirySchema)
+        }
+    );
+
+    const onSubmit = async (data: inquiryType) => {
+        try {
+            const res = await handleSendInquiry(data);
+
+            if (!res.success) {
+                throw new Error(res.message || "Failed to send inquiry!");
+            };
+
+            toast.success(res.message || "Inquiry sent successfully!");
+
+            reset();
+
+        } catch (err: any) {
+            toast.error(err.message || "Failed to send inquiry!");
+        };
+    };
 
     return (
         <section aria-labelledby="contact-heading" className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -12,9 +46,7 @@ export default function ContactSection() {
             </div>
 
             <div className="mt-12 grid gap-6 lg:grid-cols-[1fr_520px] lg:items-stretch">
-                <form
-                    className="rounded-4xl border border-emerald-100 bg-white p-6 shadow-lg shadow-emerald-950/5 sm:p-8"
-                >
+                <form onSubmit={handleSubmit(onSubmit)} className="rounded-4xl border border-emerald-100 bg-white p-6 shadow-lg shadow-emerald-950/5 sm:p-8">
                     <div className="space-y-5">
                         <div className="grid gap-4 sm:grid-cols-2">
                             <div className="space-y-2">
@@ -25,10 +57,12 @@ export default function ContactSection() {
                                     Full name
                                 </label>
                                 <input
+                                    {...register("fullName")}
                                     id="fullName"
                                     className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                     placeholder="Enter your name"
                                 />
+                                {errors.fullName && (<p className="text-xs font-medium text-red-500">{errors.fullName.message}</p>)}
                             </div>
 
                             <div className="space-y-2">
@@ -39,11 +73,14 @@ export default function ContactSection() {
                                     Email address
                                 </label>
                                 <input
+                                    {...register("email")}
                                     id="email"
                                     type="email"
                                     className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                     placeholder="Enter your email"
                                 />
+                                {errors.email && (
+                                    <p className="text-xs font-medium text-red-500">{errors.email.message}</p>)}
                             </div>
                         </div>
 
@@ -55,10 +92,12 @@ export default function ContactSection() {
                                 Phone number
                             </label>
                             <input
+                                {...register("phoneNumber")}
                                 id="phoneNumber"
                                 className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                 placeholder="Enter your phone number"
                             />
+                            {errors.phoneNumber && (<p className="text-xs font-medium text-red-500">{errors.phoneNumber.message}</p>)}
                         </div>
 
                         <div className="space-y-2">
@@ -69,17 +108,23 @@ export default function ContactSection() {
                                 Message
                             </label>
                             <textarea
+                                {...register("message")}
                                 id="message"
                                 className="min-h-25 w-full rounded-3xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                 placeholder="Tell us what kind of trip you want"
                             />
+                            {errors.message && (<p className="text-xs font-medium text-red-500">{errors.message.message}</p>)}
                         </div>
 
                         <button
                             type="submit"
-                            className="inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-6 py-3.5 text-sm font-semibold text-white transition-all duration-300 cursor-pointer hover:-translate-y-0.5 hover:bg-emerald-800"
+                            disabled={isSubmitting}
+                            className={`inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-6 py-3.5 text-sm font-semibold text-white transition-all duration-300 ${isSubmitting
+                                ? "opacity-50"
+                                : "cursor-pointer hover:-translate-y-0.5 hover:bg-emerald-800"
+                                }`}
                         >
-                            Send message
+                            {isSubmitting ? "Sending..." : "Send message"}
                         </button>
                     </div>
                 </form>
