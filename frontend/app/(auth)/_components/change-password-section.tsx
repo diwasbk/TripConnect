@@ -1,9 +1,51 @@
 "use client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+    changePasswordSchema,
+    changePasswordType,
+} from "@/lib/schemas/auth.schema";
+import { handleChangePassword } from "@/lib/actions/auth-action";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function ChangePasswordSection() {
+    const router = useRouter();
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isSubmitting },
+    } = useForm<changePasswordType>({
+        resolver: zodResolver(changePasswordSchema),
+    });
+
+    const onSubmit = async (data: changePasswordType) => {
+        try {
+            const res = await handleChangePassword(data);
+
+            if (!res.success) {
+                throw new Error(res.message || "Failed to change password!");
+            };
+
+            toast.success(res.message || "Password changed successfully!");
+
+            reset();
+
+            router.replace("/login");
+
+        } catch (err: any) {
+            toast.error(err.message || "Failed to reset password!");
+        };
+    };
+
     return (
         <main className="mx-auto w-full px-4 py-6 sm:px-5 sm:py-6 md:px-6 md:py-6 lg:px-6 lg:py-6">
-            <form className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-xl shadow-emerald-950/5 sm:p-8 lg:p-10">
+            <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-xl shadow-emerald-950/5 sm:p-8 lg:p-10"
+            >
                 <div className="mb-8 space-y-3">
                     <p className="text-sm font-semibold uppercase tracking-[0.28em] text-emerald-700">
                         Account Security
@@ -33,11 +75,14 @@ export default function ChangePasswordSection() {
                         </label>
 
                         <input
+                            {...register("currentPassword")}
                             id="currentPassword"
                             type="password"
                             placeholder="Enter current password"
                             className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                         />
+
+                        {errors.currentPassword && (<p className="text-xs font-medium text-red-500">{errors.currentPassword.message}</p>)}
                     </div>
 
                     <div className="space-y-2">
@@ -49,11 +94,14 @@ export default function ChangePasswordSection() {
                         </label>
 
                         <input
+                            {...register("newPassword")}
                             id="newPassword"
                             type="password"
                             placeholder="Enter new password"
                             className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                         />
+
+                        {errors.newPassword && (<p className="text-xs font-medium text-red-500">{errors.newPassword.message}</p>)}
                     </div>
 
                     <div className="space-y-2">
@@ -65,18 +113,22 @@ export default function ChangePasswordSection() {
                         </label>
 
                         <input
+                            {...register("confirmPassword")}
                             id="confirmPassword"
                             type="password"
                             placeholder="Confirm new password"
                             className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                         />
+
+                        {errors.confirmPassword && (<p className="text-xs font-medium text-red-500">{errors.confirmPassword.message}</p>)}
                     </div>
 
                     <button
                         type="submit"
-                        className="inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-5 py-3.5 text-base font-semibold text-white shadow-lg shadow-emerald-700/20 transition-all duration-300 cursor-pointer hover:-translate-y-0.5 hover:bg-emerald-800"
+                        disabled={isSubmitting}
+                        className={`inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-5 py-3.5 text-base font-semibold text-white shadow-lg shadow-emerald-700/20 transition-all duration-300 ${isSubmitting ? "opacity-50" : "cursor-pointer hover:-translate-y-0.5 hover:bg-emerald-800"}`}
                     >
-                        Update Password
+                        {isSubmitting ? "Updating Password..." : "Update Password"}
                     </button>
                 </div>
             </form>
