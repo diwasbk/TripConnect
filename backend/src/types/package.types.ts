@@ -86,6 +86,17 @@ export const packageSchema = z.object({
 });
 export type packageType = z.infer<typeof packageSchema>;
 
+/* Package Details Schema */
+export const packageDetailsSchema = z.object({
+    itinerary: z
+        .array(itinerarySchema)
+        .min(1, "At least one itinerary is required."),
+
+    departures: z
+        .array(departureSchema)
+        .min(1, "At least one departure is required.")
+});
+
 // Package Basic Info Schema
 export const packageBasicInfoSchema = packageSchema.pick({
     title: true,

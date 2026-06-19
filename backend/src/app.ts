@@ -9,12 +9,16 @@ import inquiryRouter from "./routes/inquiry.route";
 import galleryRouter from "./routes/gallery.route";
 import cors from "cors";
 import subscriberRouter from "./routes/subscriber.route";
+import { CLIENT_URL } from "./config/config";
 
 const app: Application = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({
+    origin: CLIENT_URL,
+    credentials: true
+}));
 
 // Serve uploaded files
 app.use("/api/uploads/packages", express.static("uploads/packages"))

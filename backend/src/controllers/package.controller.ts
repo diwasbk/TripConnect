@@ -9,7 +9,7 @@ class PackageController {
 
             const createdSlug = title.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
-            await PackageModel.create({
+            const result = await PackageModel.create({
                 title: title,
                 slug: createdSlug,
                 destination: destination,
@@ -25,6 +25,7 @@ class PackageController {
 
             res.status(201).send({
                 message: "Package created successfully!",
+                result: result,
                 success: true
             });
 
@@ -130,9 +131,11 @@ class PackageController {
         try {
             const limit = Number(req.query.limit) || 3;
 
-            const packages = await PackageModel.find({
-                isActive: true, status: "published"
-            }).sort({ totalBookings: -1 }).limit(limit);
+            const packages = await PackageModel.find(
+                {
+                    isActive: true, status: "published"
+                }
+            ).sort({ totalBookings: -1 }).limit(limit);
 
             res.status(200).send({
                 message: `Top ${limit} booked packages fetched successfully!`,
@@ -323,6 +326,42 @@ class PackageController {
                 success: false
             });
         };
+    };
+
+    // Add Package Details By Package ID
+    addPackageDetailsByPackageId = async (req: Request, res: Response) => {
+        try {
+            const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
+
+            if (!packageExist) {
+                return res.status(404).send({
+                    message: "Package not found!",
+                    success: false
+                });
+            }
+
+            const { itinerary, departures } = req.body;
+
+            // Add itinerary details
+            packageExist.itinerary.push(...itinerary);
+
+            // Add departure details
+            packageExist.departures.push(...departures);
+
+            await packageExist.save();
+
+            res.status(200).send({
+                message: "Package details added successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error!",
+                success: false
+            });
+        }
     };
 
     // Add Package Itinerary By Package ID
@@ -703,6 +742,42 @@ class PackageController {
 
             res.status(200).send({
                 message: "Package published successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
+
+    // Get Packages By Active Status
+    getPackagesByActiveStatus = async (req: Request, res: Response) => {
+        try {
+            let message: string;
+            let isActive: boolean;
+
+            if (req.params.isActive == "true") {
+                message = "Active";
+                isActive = true;
+            } else if (req.params.isActive == "false") {
+                message = "Deactivated";
+                isActive = false;
+            } else {
+                return res.status(400).send({
+                    message: "Invalid value! Use true or false.",
+                    success: false
+                });
+            };
+
+            const result = await PackageModel.find({ isActive: isActive });
+
+            res.status(200).send({
+                message: result.length ? `${message} packages fetched successfully!` : `No ${message} packages!`,
+                result: result,
                 success: true
             });
 

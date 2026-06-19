@@ -19,11 +19,11 @@ class InquiryController {
 
             const html = generateInquiryConfirmationEmail({ fullName, email, phoneNumber, message });
 
-            await sendEmail(email, "Thank You for Contacting MediConnect", html);
+            await sendEmail(email, "Thank You for Contacting TripConnect", html);
 
             // Send success response 
             res.status(201).send({
-                message: "Message sent succcessfully!",
+                message: "Message sent successfully!",
                 success: true
             });
 

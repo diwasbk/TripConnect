@@ -1,6 +1,6 @@
 import express from "express";
 import schemaValidateMiddleware from "../middlewares/schema.validator.middleware";
-import { departureSchema, itinerarySchema, packageBasicInfoSchema } from "../types/package.types";
+import { departureSchema, itinerarySchema, packageBasicInfoSchema, packageDetailsSchema } from "../types/package.types";
 import PackageController from "../controllers/package.controller";
 import { upload } from "../middlewares/multer.middleware";
 
@@ -17,6 +17,7 @@ packageRouter.put("/update-basic-info/:packageId", schemaValidateMiddleware(pack
 packageRouter.put("/upload-photo/:packageId", upload.single("myfile"), packageController.uploadPackagePhotosByPackageId);
 packageRouter.delete("/delete-photo/:packageId", packageController.deletePackagePhotoByPackageId);
 packageRouter.delete("/delete/:packageId", packageController.deleteSinglePackageById);
+packageRouter.put("/add-details/:packageId", schemaValidateMiddleware(packageDetailsSchema), packageController.addPackageDetailsByPackageId);
 
 packageRouter.put("/itinerary/add/:packageId", schemaValidateMiddleware(itinerarySchema), packageController.addPackageItineraryByPackageId);
 packageRouter.get("/itinerary/:packageId", packageController.getPackageItineraryByPackageId);
@@ -29,6 +30,7 @@ packageRouter.put("/departure/update/:packageId/:departureId", schemaValidateMid
 packageRouter.delete("/departure/delete/:packageId/:departureId", packageController.deleteDepartureByDepartureId);
 
 packageRouter.patch("/publish/:packageId", packageController.publishPackageByPackageID);
+packageRouter.get("/active-status/:isActive", packageController.getPackagesByActiveStatus);
 packageRouter.patch("/activate-deactivate/:packageId/:isActive", packageController.activateORdeactivatePackageById);
 
 export default packageRouter;
