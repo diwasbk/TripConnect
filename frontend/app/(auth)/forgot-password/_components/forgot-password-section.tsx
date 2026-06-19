@@ -1,7 +1,44 @@
 "use client";
+import { handleRequestPasswordResetEmail } from "@/lib/actions/auth-action";
+import { requestPasswordResetEmailSchema, requestPasswordResetEmaiType } from "@/lib/schemas/auth.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 export default function ForgotPasswordSection() {
+    const router = useRouter();
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isSubmitting }
+    } = useForm<requestPasswordResetEmaiType>(
+        {
+            resolver: zodResolver(requestPasswordResetEmailSchema)
+        }
+    );
+
+    const onSubmit = async (data: requestPasswordResetEmaiType) => {
+        try {
+            const res = await handleRequestPasswordResetEmail(data);
+
+            if (!res.success) {
+                throw new Error(res.message || "Failed to request password reset email!");
+            };
+
+            toast.success(res.message || "Password reset email send successfully!");
+
+            reset();
+
+            router.push("/login")
+
+        } catch (err: any) {
+            toast.error(err.message || "Failed to request password reset email!");
+        };
+    };
 
     return (
         <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
@@ -45,7 +82,7 @@ export default function ForgotPasswordSection() {
                     </div>
                 </section>
 
-                <form className="rounded-4xl border border-emerald-100 bg-white p-6 shadow-xl shadow-emerald-950/5 sm:p-8 lg:p-10">
+                <form onSubmit={handleSubmit(onSubmit)} className="rounded-4xl border border-emerald-100 bg-white p-6 shadow-xl shadow-emerald-950/5 sm:p-8 lg:p-10">
                     <div className="mb-8 space-y-3">
                         <p className="text-sm font-semibold uppercase tracking-[0.28em] text-emerald-700">Password help</p>
                         <h2 className="text-3xl font-black tracking-tight text-slate-950">Reset your password</h2>
@@ -58,12 +95,16 @@ export default function ForgotPasswordSection() {
                         <div className="space-y-2">
                             <label htmlFor="forgot-email" className="text-sm font-semibold text-slate-800">Email address</label>
                             <input
+                                {...register("email")}
                                 id="forgot-email"
                                 name="email"
                                 autoComplete="email"
                                 className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                 placeholder="you@example.com"
                             />
+                            {errors.email && (
+                                <p className="text-xs font-medium text-red-500">{errors.email?.message}</p>
+                            )}
                         </div>
 
                         <div className="rounded-3xl border border-emerald-100 bg-emerald-50/40 p-4 text-sm leading-6 text-slate-600">
@@ -72,9 +113,10 @@ export default function ForgotPasswordSection() {
 
                         <button
                             type="submit"
-                            className="inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-5 py-3.5 text-base font-semibold text-white shadow-lg shadow-emerald-700/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-800 cursor-pointer"
+                            disabled={isSubmitting}
+                            className={`inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-5 py-3.5 text-base font-semibold text-white shadow-lg shadow-emerald-700/20 transition-all duration-300 ${isSubmitting ? "opacity-50" : "hover:-translate-y-0.5 hover:bg-emerald-800 cursor-pointer"}`}
                         >
-                            Send Reset Link
+                            {isSubmitting ? "Sending Reset Link..." : "Send Reset Link"}
                         </button>
 
                         <p className="text-center text-sm text-slate-600">
