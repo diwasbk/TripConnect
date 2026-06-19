@@ -50,11 +50,28 @@ class PackageController {
                 });
             };
 
-            const result = await PackageModel.find({ status: status });
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 5;
+
+            const total = await PackageModel.countDocuments({
+                status: status,
+            });
+
+            const result = await PackageModel.find({
+                status: status
+            }).skip((page - 1) * limit).limit(limit);
 
             res.status(200).send({
                 message: result.length ? "Packaged fetched successfully!" : "No Packages!",
                 result: result,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                    hasNextPage: page < Math.ceil(total / limit),
+                    hasPreviousPage: page > 1
+                },
                 success: true
             });
 
@@ -179,8 +196,8 @@ class PackageController {
         };
     };
 
-    // Delete Single Package By ID
-    deleteSinglePackageById = async (req: Request, res: Response) => {
+    // Delete Package By ID
+    deletePackageById = async (req: Request, res: Response) => {
         try {
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
@@ -773,11 +790,28 @@ class PackageController {
                 });
             };
 
-            const result = await PackageModel.find({ isActive: isActive });
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 5;
+
+            const total = await PackageModel.countDocuments({
+                isActive: isActive
+            });
+
+            const result = await PackageModel.find({
+                isActive: isActive
+            }).skip((page - 1) * limit).limit(limit);
 
             res.status(200).send({
                 message: result.length ? `${message} packages fetched successfully!` : `No ${message} packages!`,
                 result: result,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                    hasNextPage: page < Math.ceil(total / limit),
+                    hasPreviousPage: page > 1
+                },
                 success: true
             });
 
