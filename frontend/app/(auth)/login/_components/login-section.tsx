@@ -1,7 +1,42 @@
 "use client";
+import { handleLogin } from "@/lib/actions/auth-action";
+import { loginSchema, loginType } from "@/lib/schemas/auth.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 export default function LoginSection() {
+    const router = useRouter();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting }
+    } = useForm<loginType>(
+        {
+            resolver: zodResolver(loginSchema)
+        }
+    );
+
+    const onSubmit = async (data: loginType) => {
+        try {
+            const res = await handleLogin(data);
+
+            if (!res.success) {
+                throw new Error(res.message || "Login failed!");
+            };
+
+            toast.success(res.message || "Login successful!");
+
+            router.push("/user/my-trips");
+
+        } catch (err: any) {
+            toast.error(err.message || "Login failed!");
+        };
+    };
+
     return (
         <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
             <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
@@ -44,7 +79,7 @@ export default function LoginSection() {
                     </div>
                 </section>
 
-                <form className="rounded-4xl border border-emerald-100 bg-white p-6 shadow-xl shadow-emerald-950/5 sm:p-8 lg:p-10">
+                <form onSubmit={handleSubmit(onSubmit)} className="rounded-4xl border border-emerald-100 bg-white p-6 shadow-xl shadow-emerald-950/5 sm:p-8 lg:p-10">
                     <div className="mb-8 space-y-3">
                         <p className="text-sm font-semibold uppercase tracking-[0.28em] text-emerald-700">Login</p>
                         <h2 className="text-3xl font-black tracking-tight text-slate-950">Log in to your account</h2>
@@ -57,17 +92,22 @@ export default function LoginSection() {
                         <div className="space-y-2">
                             <label htmlFor="login-email" className="text-sm font-semibold text-slate-800">Email address</label>
                             <input
+                                {...register("email")}
                                 id="login-email"
                                 name="email"
                                 autoComplete="email"
                                 className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                 placeholder="you@example.com"
                             />
+                            {errors.email && (
+                                <p className="text-xs font-medium text-red-500">{errors.email?.message}</p>
+                            )}
                         </div>
 
                         <div className="space-y-2">
                             <label htmlFor="login-password" className="text-sm font-semibold text-slate-800">Password</label>
                             <input
+                                {...register("password")}
                                 id="login-password"
                                 name="password"
                                 type="password"
@@ -75,6 +115,9 @@ export default function LoginSection() {
                                 className="w-full rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-slate-950 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                                 placeholder="Enter your password"
                             />
+                            {errors.password && (
+                                <p className="text-xs font-medium text-red-500">{errors.password?.message}</p>
+                            )}
                         </div>
 
                         <div className="flex items-center justify-between gap-4 text-sm">
@@ -92,9 +135,10 @@ export default function LoginSection() {
 
                         <button
                             type="submit"
-                            className="inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-5 py-3.5 text-base font-semibold text-white shadow-lg shadow-emerald-700/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-800 cursor-pointer"
+                            disabled={isSubmitting}
+                            className={`inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-5 py-3.5 text-base font-semibold text-white shadow-lg shadow-emerald-700/20 transition-all duration-300 ${isSubmitting ? "opacity-50" : "hover:-translate-y-0.5 hover:bg-emerald-800 cursor-pointer"}`}
                         >
-                            Login
+                            {isSubmitting ? "Logging in..." : "Login"}
                         </button>
 
                         <p className="text-center text-sm text-slate-600">
