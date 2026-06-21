@@ -169,8 +169,8 @@ class PackageController {
         };
     };
 
-    // Get Single Package By ID
-    getSinglePackageById = async (req: Request, res: Response) => {
+    // Get Package By ID
+    getPackageById = async (req: Request, res: Response) => {
         try {
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 

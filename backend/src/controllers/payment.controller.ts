@@ -12,6 +12,9 @@ class PaymentController {
     // Get All Payments By Status
     getAllPaymentsByPaymentStatus = async (req: Request, res: Response) => {
         try {
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 5;
+
             const paymentStatus = req.params.paymentStatus as typeof paymentStatuses[number];
 
             if (!paymentStatus) {
@@ -28,11 +31,21 @@ class PaymentController {
                 });
             };
 
-            const result = await PaymentModel.find({ paymentStatus: paymentStatus });
+            const total = await PaymentModel.countDocuments({ paymentStatus: paymentStatus })
+
+            const result = await PaymentModel.find({ paymentStatus: paymentStatus }).skip((page - 1) * limit).limit(limit);
 
             res.status(200).send({
                 message: result.length ? `${paymentStatus} payments fetched successfully!` : " Payments not found!",
                 result: result,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                    hasNextPage: page < Math.ceil(total / limit),
+                    hasPreviousPage: page > 1
+                },
                 success: true
             });
 
@@ -140,7 +153,7 @@ class PaymentController {
             const signature = crypto.createHmac("sha256", PAYMENT_SECRET_KEY).update(message).digest("base64");
 
             return res.status(201).send({
-                message: "Esewa payment initialized successfully!",
+                message: "eSsewa payment initialized successfully!",
                 result: {
                     amount: amount,
                     tax_amount: tax_amount,

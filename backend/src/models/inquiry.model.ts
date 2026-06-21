@@ -35,4 +35,4 @@ export interface IInquiry extends inquiryType, Document {
     updatedAt: Date;
 };
 
-export const inquiryModel = mongoose.model<IInquiry>('Inquiry', inquirySchema);
+export const InquiryModel = mongoose.model<IInquiry>('Inquiry', inquirySchema);
