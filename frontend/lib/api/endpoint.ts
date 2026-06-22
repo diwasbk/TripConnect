@@ -6,13 +6,13 @@ const API = {
         GET_USER_BY_ID: (userId: string) => `/auth/user/${userId}`,
         UPDATE_USER_INFO_BY_ID: (userId: string) => `/auth/user/update/${userId}`,
         CHANGE_PASSWORD: "/auth/change-password",
-        REQUEST_PASSWORD_RESET_EMAL: "/auth/request-password-reset-email",
+        REQUEST_PASSWORD_RESET_EMAIL: "/auth/request-password-reset-email",
         RESET_ACCOUNT_PASSWORD: "/auth/reset-account-password",
         DELETE_ACCOUNT: "/auth/delete-account"
     },
     BOOKING: {
         CREATE_BY_PACKAGE_ID: (packageId: string) => `/booking/${packageId}`,
-        GET_BY_USER_ID: (userId: string) => `/booking/by-user-id/${userId}`,
+        GET_BY_USER_ID: (userId: string, page: number, limit: number) => `/booking/by-user-id/${userId}?page=${page}&limit=${limit}`,
         GET_BY_BOOKING_ID: (bookingId: string) => `/booking/booking-id/${bookingId}`,
         GET_BY_BOOKING_REFERENCE: (bookingReference: string) => `/booking/booking-reference/${bookingReference}`
     },
@@ -21,7 +21,7 @@ const API = {
         LIVE: (page: number) => `/package/live?page=${page}`,
         GET_TOP_BOOKED: "/package/top-booked",
         GET_BY_ID: (packageId: string) => `/package/${packageId}`,
-        GET_BY_SLUG: (slug: string) => `/package/${slug}`,
+        GET_BY_SLUG: (slug: string) => `/package/slug/${slug}`,
         GET_BY_STATUS: (status: string) => `/package/all?status=${status}`,
         UPDATE_BASIC_INFO_BY_ID: (packageId: string) => `/package/update-basic-info/${packageId}`,
         DELETE_BY_ID: (packageId: string) => `/package/delete/${packageId}`,

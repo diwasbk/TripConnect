@@ -54,9 +54,9 @@ export const handleGetBookingByBookingReference = async (bookingReference: strin
 };
 
 // Handle Get All Bookings By User Id
-export const handleGetAllBookingsByUserId = async (userId: string) => {
+export const handleGetAllBookingsByUserId = async (userId: string, page: number = 1, limit: number = 5) => {
     try {
-        const result = await getAllBookingsByUserId(userId);
+        const result = await getAllBookingsByUserId(userId, page, limit);
 
         if (!result.success) {
             return {
@@ -68,6 +68,7 @@ export const handleGetAllBookingsByUserId = async (userId: string) => {
         return {
             message: result.message || "Booking fetched successfully!",
             result: result.result,
+            pagination: result.pagination,
             success: true
         };
 

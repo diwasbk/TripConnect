@@ -3,6 +3,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { handleGetPackagesBySlug } from "@/lib/actions/package-action";
 import PackageDetailSection from "../_components/package-detail-section";
+import { toast } from "react-toastify";
 
 export default function Page() {
     const params = useParams();
@@ -24,7 +25,7 @@ export default function Page() {
                 };
 
             } catch (err: any) {
-                console.error(err.message || "Failed to fetch packages!");
+                toast.error(err.message || "Failed to fetch packages!");
 
             } finally {
                 setLoading(false);

@@ -27,9 +27,9 @@ export const getBookingByBookingReference = async (bookingReference: string) => 
 };
 
 // Get All Bookings By User Id
-export const getAllBookingsByUserId = async (userId: string) => {
+export const getAllBookingsByUserId = async (userId: string, page: number = 1, limit: number = 5) => {
     try {
-        const response = await axiosInstance.get(API.BOOKING.GET_BY_USER_ID(userId));
+        const response = await axiosInstance.get(API.BOOKING.GET_BY_USER_ID(userId, page, limit));
 
         return response.data;
 
