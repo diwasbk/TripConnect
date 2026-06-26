@@ -7,8 +7,8 @@ import { PaymentModel } from "../models/payment.model";
 import { generateBookingReference } from "../utils/helper";
 
 class BookingController {
-    // Book Package By Package ID
-    bookPackageByPackageId = async (req: Request, res: Response) => {
+    // Create Booking By Package ID
+    createBookingByPackageId = async (req: Request, res: Response) => {
         try {
             const user = req.user as { id: string } | null;
             let isGuest = true;
@@ -95,9 +95,12 @@ class BookingController {
         };
     };
 
-    // Get All Bookings By Status
-    getAllBookingsByStatus = async (req: Request, res: Response) => {
+    // Get All Bookings By Status And Guest Type
+    getAllBookingsByStatusAndGuestType = async (req: Request, res: Response) => {
         try {
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 5;
+
             const status = req.query.status as | "pending" | "confirmed" | "in-progress" | "completed" | "cancelled" | undefined;
 
             type BookingStatus = (typeof bookingStatuses)[number];
@@ -122,14 +125,24 @@ class BookingController {
                 });
             };
 
+            const total = await BookingModel.countDocuments({ status: status, isGuest: isGuest });
+
             const result = await BookingModel.find({
                 status: status,
                 isGuest: isGuest
-            });
+            }).skip((page - 1) * limit).limit(limit);
 
             res.status(200).send({
                 message: result.length ? "Bookings fetched successfully!" : "Booking not found!",
                 result: result,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                    hasNextPage: page < Math.ceil(total / limit),
+                    hasPreviousPage: page > 1
+                },
                 success: true
             });
 
@@ -239,6 +252,9 @@ class BookingController {
     // Get All Bookings By Package ID
     getAllBookingsByPackageId = async (req: Request, res: Response) => {
         try {
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 5;
+
             const packageExist = await PackageModel.findOne({ _id: req.params.packageId });
 
             if (!packageExist) {
@@ -248,11 +264,21 @@ class BookingController {
                 });
             };
 
-            const result = await BookingModel.find({ packageId: req.params.packageId });
+            const total = await BookingModel.countDocuments({ packageId: req.params.packageId });
+
+            const result = await BookingModel.find({ packageId: req.params.packageId }).skip((page - 1) * limit).limit(limit);
 
             res.status(200).send({
                 message: result.length ? "Bookings fetched successfully!" : "Bookings not found!",
                 result: result,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                    hasNextPage: page < Math.ceil(total / limit),
+                    hasPreviousPage: page > 1
+                },
                 success: true
             });
 
@@ -268,6 +294,9 @@ class BookingController {
     // Get All Bookings By User Id
     getAllBookingsByUserId = async (req: Request, res: Response) => {
         try {
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 5;
+            
             const userExist = await UserModel.findOne({ _id: req.params.userId });
 
             if (!userExist) {
@@ -277,11 +306,21 @@ class BookingController {
                 });
             };
 
-            const result = await BookingModel.find({ userId: req.params.userId });
+            const total = await BookingModel.countDocuments({  userId: req.params.userId});
+            
+            const result = await BookingModel.find({ userId: req.params.userId }).skip((page - 1) * limit).limit(limit);
 
             res.status(200).send({
                 message: result.length ? "Bookings fetched successfully!" : "Bookings not found!",
                 result: result,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                    hasNextPage: page < Math.ceil(total / limit),
+                    hasPreviousPage: page > 1
+                },
                 success: true
             });
 
@@ -327,7 +366,7 @@ class BookingController {
         };
     };
 
-    // Update Booking's Travel Status By Booking ID
+    // Update Booking's Status By Booking ID
     updateBookingStatusByBookingId = async (req: Request, res: Response) => {
         try {
             const bookingExist = await BookingModel.findOne({ _id: req.params.bookingId });

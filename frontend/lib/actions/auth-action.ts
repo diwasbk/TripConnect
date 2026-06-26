@@ -1,4 +1,4 @@
-import { changePasswordType, deleteAccountType, loginType, requestPasswordResetEmaiType, resetPassswordType } from "../schemas/auth.schema";
+import { changePasswordType, deleteAccountType, loginType, requestPasswordResetEmailType, resetPasswordType } from "../schemas/auth.schema";
 import { changePassword, deleteUserAccount, getUserById, loginUser, requestPasswordResetEmail, resetAccountPassword, signupUser, updateUserInfoById, whoAmI } from "../api/auth";
 import { userType } from "../schemas/user.schema";
 
@@ -155,7 +155,7 @@ export const handleChangePassword = async (data: changePasswordType) => {
 };
 
 // Handle Request Password Reset Email
-export const handleRequestPasswordResetEmail = async (data: requestPasswordResetEmaiType) => {
+export const handleRequestPasswordResetEmail = async (data: requestPasswordResetEmailType) => {
     try {
         const result = await requestPasswordResetEmail(data);
 
@@ -180,7 +180,7 @@ export const handleRequestPasswordResetEmail = async (data: requestPasswordReset
 };
 
 // Handle Reset Account Password
-export const handleResetAccountPassword = async (data: resetPassswordType) => {
+export const handleResetAccountPassword = async (data: resetPasswordType) => {
     try {
         const result = await resetAccountPassword(data);
 

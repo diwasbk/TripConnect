@@ -6,6 +6,10 @@ const subscriberSchema: Schema = new mongoose.Schema<subscriberType>({
         type: String,
         required: true,
         unique: true
+    },status: {
+        type: String,
+        enum: ["subscribed", "unsubscribed"],
+        default: "subscribed"
     }
 }, { timestamps: true });
 

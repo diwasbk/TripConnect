@@ -1,6 +1,6 @@
 "use client";
 import { handleRequestPasswordResetEmail } from "@/lib/actions/auth-action";
-import { requestPasswordResetEmailSchema, requestPasswordResetEmaiType } from "@/lib/schemas/auth.schema";
+import { requestPasswordResetEmailSchema, requestPasswordResetEmailType } from "@/lib/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,13 +15,13 @@ export default function ForgotPasswordSection() {
         handleSubmit,
         reset,
         formState: { errors, isSubmitting }
-    } = useForm<requestPasswordResetEmaiType>(
+    } = useForm<requestPasswordResetEmailType>(
         {
             resolver: zodResolver(requestPasswordResetEmailSchema)
         }
     );
 
-    const onSubmit = async (data: requestPasswordResetEmaiType) => {
+    const onSubmit = async (data: requestPasswordResetEmailType) => {
         try {
             const res = await handleRequestPasswordResetEmail(data);
 

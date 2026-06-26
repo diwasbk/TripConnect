@@ -126,6 +126,39 @@ class AuthController {
         };
     };
 
+    // Get All Users
+    getAllUsers = async (req: Request, res: Response) => {
+        try {
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 5;
+
+            const result = await UserModel.find().select("-password").lean().skip((page - 1) * limit).limit(limit);;
+
+            const total = await UserModel.countDocuments({});
+
+            res.status(200).send({
+                message: result.length ? "User fetched successfully!" : "Users not found",
+                result: result,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                    hasNextPage: page < Math.ceil(total / limit),
+                    hasPreviousPage: page > 1
+                },
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
+
     // Get User By ID
     getUserById = async (req: Request, res: Response) => {
         try {
@@ -321,12 +354,12 @@ class AuthController {
         };
     };
 
-    // Delete User Account
-    deleteUserAccount = async (req: Request, res: Response) => {
+    // Delete User Account By ID
+    deleteUserAccountByUserId = async (req: Request, res: Response) => {
         try {
-            const user = req.user as { id: string, role: string };
+            const user = req.user as { id: string };
 
-            const userExist = await UserModel.findOne({ _id: user.id });
+            const userExist = await UserModel.findOne({ _id: req.params.userId });
 
             if (!userExist) {
                 return res.status(404).send({
@@ -335,7 +368,23 @@ class AuthController {
                 });
             };
 
-            const isPasswordMatch = await bcrypt.compare(req.body.password, userExist.password)
+            const authUser = await UserModel.findOne({ _id: user.id });
+
+            if (!authUser) {
+                return res.status(404).send({
+                    message: "Something went wrong! Please try again later.",
+                    success: false
+                });
+            };
+
+            if (authUser?.role === "admin" && authUser._id.toString() === req.params.userId) {
+                return res.status(403).send({
+                    message: "Admin cannot delete their own account!",
+                    success: false
+                });
+            };
+
+            const isPasswordMatch = await bcrypt.compare(req.body.password, authUser.password)
 
             if (!isPasswordMatch) {
                 return res.status(401).send({
@@ -344,13 +393,7 @@ class AuthController {
                 });
             };
 
-            await UserModel.findOneAndDelete({ _id: user.id });
-
-            res.clearCookie("auth_token", {
-                httpOnly: true,
-                secure: true,
-                sameSite: "strict"
-            });
+            await UserModel.findOneAndDelete({ _id: req.params.userId });
 
             res.status(200).send({
                 message: "User account deleted successfully!",

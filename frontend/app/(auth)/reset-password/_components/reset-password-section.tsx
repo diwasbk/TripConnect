@@ -1,6 +1,6 @@
 "use client";
 import { handleResetAccountPassword } from "@/lib/actions/auth-action";
-import { resetPassswordType, resetPasswordSchema } from "@/lib/schemas/auth.schema";
+import { resetPasswordType, resetPasswordSchema } from "@/lib/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -31,14 +31,14 @@ export default function ResetPasswordSection() {
         handleSubmit,
         reset,
         formState: { errors, isSubmitting }
-    } = useForm<resetPassswordType>(
+    } = useForm<resetPasswordType>(
         {
             resolver: zodResolver(resetPasswordSchema),
             defaultValues: { "token": tokenFromURL || "" }
         }
     );
 
-    const onSubmit = async (data: resetPassswordType) => {
+    const onSubmit = async (data: resetPasswordType) => {
         try {
             const res = await handleResetAccountPassword(data);
 

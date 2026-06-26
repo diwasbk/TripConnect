@@ -37,6 +37,9 @@ class PromoCodeController {
     // Get All PromoCode By Status
     getAllPromoCodeByStatus = async (req: Request, res: Response) => {
         try {
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 5;
+
             let isActive: boolean;
 
             if (req.params.isActive == "true") {
@@ -50,12 +53,22 @@ class PromoCodeController {
                 });
             };
 
-            const result = await PromoCodeModel.find({ isActive: isActive });
+            const total = await PaymentModel.countDocuments({ isActive: isActive })
+
+            const result = await PromoCodeModel.find({ isActive: isActive }).skip((page - 1) * limit).limit(limit);
 
             res.status(200).send({
                 message: result.length ? "PromoCode fetched successfully!" : " PromoCode not found!",
                 isActive: isActive,
                 result: result,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                    hasNextPage: page < Math.ceil(total / limit),
+                    hasPreviousPage: page > 1
+                },
                 success: true
             });
 
@@ -189,7 +202,7 @@ class PromoCodeController {
             };
 
 
-            if (paymentExist.promoCodeId!==null) {
+            if (paymentExist.promoCodeId !== null) {
                 return res.status(409).send({
                     message: "PromoCode already applied!",
                     success: false

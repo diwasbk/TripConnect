@@ -34,7 +34,7 @@ class GalleryController {
     // Get Gallery By Slug
     getGalleryBySlug = async (req: Request, res: Response) => {
         try {
-            const galleryExist = await GalleryModel.findOne({slug: req.params.slug });
+            const galleryExist = await GalleryModel.findOne({ slug: req.params.slug });
 
             if (!galleryExist) {
                 return res.status(404).send({
@@ -61,6 +61,9 @@ class GalleryController {
     // Get All Galleries By Status
     getAllGalleriesByStatus = async (req: Request, res: Response) => {
         try {
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 5;
+
             let message: string;
             let isActive: boolean;
 
@@ -77,11 +80,21 @@ class GalleryController {
                 });
             };
 
-            const result = await GalleryModel.find({ isActive: isActive });
+            const total = await GalleryModel.countDocuments({ isActive: isActive });
+
+            const result = await GalleryModel.find({ isActive: isActive }).skip((page - 1) * limit).limit(limit);
 
             res.status(200).send({
                 message: result.length ? `${message} gallery fetched successfully!` : "Gallery not found!",
                 result: result,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                    hasNextPage: page < Math.ceil(total / limit),
+                    hasPreviousPage: page > 1
+                },
                 success: true
             });
 
@@ -256,7 +269,7 @@ class GalleryController {
     };
 
     // Activate or Deactivate Gallery By Gallery ID
-    activateOrdeactivateGallerybyId = async (req: Request, res: Response) => {
+    activateOrDeactivateGalleryById = async (req: Request, res: Response) => {
         try {
             const galleryExist = await GalleryModel.findOne({ _id: req.params.galleryId });
 

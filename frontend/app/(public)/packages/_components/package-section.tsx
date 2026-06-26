@@ -43,26 +43,30 @@ export default function PackageSection() {
                 <p className="mt-4 text-lg leading-8 text-slate-600">Compare curated pkgs by duration, budget, and travel style, then open full itineraries before booking.</p>
             </div>
 
-            <div className="mt-8 grid gap-4 sm:gap-6 lg:gap-8">
+            {/* Container grid configured for 1 column with clean responsive vertical spacing */}
+            <div className="mt-8 grid grid-cols-1 gap-y-6">
                 {packages?.map((pkg, index) => (
-                    <Link key={pkg._id} href={`packages/${pkg.slug}`}>
+                    <Link key={pkg._id} href={`packages/${pkg.slug}`} className="block w-full">
                         <article className={`card-reveal overflow-hidden rounded-2xl sm:rounded-3xl border border-emerald-100 bg-white shadow-md shadow-emerald-950/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-950/10 card-delay-${(index % 5) + 1}`}>
-                            <div className="flex flex-col sm:flex-row min-h-auto sm:min-h-48">
+                            {/* Added min-w-0 to guarantee flex sizing constraints */}
+                            <div className="flex flex-col sm:flex-row min-h-auto sm:min-h-48 min-w-0">
+
+                                {/* Image Section */}
                                 <div className="relative w-full sm:w-40 sm:shrink-0 h-40 sm:h-auto lg:w-64">
-                                    <img src={`${API_BASE_URL}/${pkg?.photoUrls[0]}`}
-
-                                        className="h-full w-full object-cover" />
+                                    <img src={`${API_BASE_URL}/${pkg?.photoUrls[0]}`} className="h-full w-full object-cover" alt={pkg.title} />
                                     <div className="absolute inset-0 bg-linear-to-t from-slate-950/70 via-slate-950/10 to-transparent" />
-
                                     <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-5 rounded-full bg-white/90 px-2.5 py-1 sm:px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-800 backdrop-blur">
                                         {pkg.duration}
                                     </div>
                                 </div>
 
-                                <div className="flex flex-1 flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-5 lg:gap-6">
+                                {/* Content Section - Added min-w-0 here to protect text lines */}
+                                <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 sm:p-5 lg:gap-6 min-w-0">
+
+                                    {/* Text Details */}
                                     <div className="min-w-0 flex-1 space-y-2">
-                                        <h2 className="text-lg sm:text-lg lg:text-xl font-black leading-tight text-slate-950">{pkg.title}</h2>
-                                        <p className="line-clamp-2 text-sm leading-5 text-slate-600 sm:text-sm sm:leading-6">{pkg.description}</p>
+                                        <h2 className="text-lg lg:text-xl font-black leading-tight text-slate-950 truncate">{pkg.title}</h2>
+                                        <p className="line-clamp-2 text-sm leading-5 text-slate-600 sm:leading-6">{pkg.description}</p>
                                         <div className="flex flex-wrap gap-2">
                                             <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-800 sm:px-3 sm:py-1.5 sm:text-xs">
                                                 {pkg.duration}
@@ -73,8 +77,9 @@ export default function PackageSection() {
                                         </div>
                                     </div>
 
-                                    <div className="flex w-full sm:w-auto shrink-0 sm:items-center self-stretch sm:self-auto">
-                                        <div className="flex w-full sm:w-auto flex-col items-end justify-center gap-2 border-t sm:border-t-0 sm:border-l border-emerald-100 pt-4 sm:pt-0 sm:pl-4 pl-0 text-right sm:min-w-36 lg:min-w-40">
+                                    {/* Right-Side Pricing Action Button Section */}
+                                    <div className="flex w-full sm:w-auto shrink-0 items-end sm:items-center self-stretch sm:self-auto">
+                                        <div className="flex w-full sm:w-auto flex-col items-stretch sm:items-end justify-center gap-2 border-t sm:border-t-0 sm:border-l border-emerald-100 pt-4 sm:pt-0 sm:pl-4 pl-0 text-left sm:text-right sm:min-w-36 lg:min-w-40">
                                             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Per traveler</p>
                                             <p className="text-base font-black text-slate-950">{pkg.price}</p>
                                             <div className="inline-flex rounded-full bg-emerald-700 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-emerald-700/20 transition-all duration-300 hover:bg-emerald-800 sm:text-sm w-full sm:w-auto justify-center">
@@ -82,6 +87,7 @@ export default function PackageSection() {
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </article>
@@ -93,11 +99,10 @@ export default function PackageSection() {
                     <button
                         onClick={() => setCurrentPage(prev => prev - 1)}
                         disabled={!pagination.hasPreviousPage || loading}
-                        className={`rounded-full border px-3 py-2 sm:px-4 text-xs sm:text-sm font-semibold transition-colors ${
-                            !pagination.hasPreviousPage || loading
-                                ? "pointer-events-none border-emerald-200 bg-white text-slate-400"
-                                : "border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 cursor-pointer"
-                        }`}
+                        className={`rounded-full border px-3 py-2 sm:px-4 text-xs sm:text-sm font-semibold transition-colors ${!pagination.hasPreviousPage || loading
+                            ? "pointer-events-none border-emerald-200 bg-white text-slate-400"
+                            : "border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 cursor-pointer"
+                            }`}
                     >
                         Previous
                     </button>
@@ -107,11 +112,10 @@ export default function PackageSection() {
                     <button
                         onClick={() => setCurrentPage(prev => prev + 1)}
                         disabled={!pagination.hasNextPage || loading}
-                        className={`rounded-full border px-3 py-2 sm:px-4 text-xs sm:text-sm font-semibold transition-colors ${
-                            !pagination.hasNextPage || loading
-                                ? "pointer-events-none border-emerald-200 bg-white text-slate-400"
-                                : "border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 cursor-pointer"
-                        }`}
+                        className={`rounded-full border px-3 py-2 sm:px-4 text-xs sm:text-sm font-semibold transition-colors ${!pagination.hasNextPage || loading
+                            ? "pointer-events-none border-emerald-200 bg-white text-slate-400"
+                            : "border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 cursor-pointer"
+                            }`}
                     >
                         Next
                     </button>
