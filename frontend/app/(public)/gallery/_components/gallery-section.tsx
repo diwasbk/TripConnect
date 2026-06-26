@@ -1,5 +1,5 @@
 "use client";
-import { handleGetGalleryByStatus } from "@/lib/actions/gallery-action";
+import { handleGetAllGalleriesByStatus } from "@/lib/actions/gallery-action";
 import { API_BASE_URL } from "@/lib/config";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -7,15 +7,18 @@ import { toast } from "react-toastify";
 
 export default function GallerySection() {
     const [gallery, setGallery] = useState<any[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pagination, setPagination] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchGalleryByStatus = async () => {
             try {
-                const res = await handleGetGalleryByStatus(true);
+                const res = await handleGetAllGalleriesByStatus(true, currentPage, 3);
 
                 if (res.success) {
                     setGallery(res.result);
+                    setPagination(res.pagination);
 
                 } else {
                     throw new Error(res.message || "Failed to fetch gallery!");
@@ -29,7 +32,7 @@ export default function GallerySection() {
             };
         };
         fetchGalleryByStatus();
-    }, []);
+    }, [currentPage]);
 
     return (
         <section className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -61,6 +64,33 @@ export default function GallerySection() {
                     </Link>
                 ))}
             </div>
+            {pagination && (
+                <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+                    <button
+                        onClick={() => setCurrentPage(prev => prev - 1)}
+                        disabled={!pagination.hasPreviousPage || loading}
+                        className={`rounded-full border px-3 py-2 sm:px-4 text-xs sm:text-sm font-semibold transition-colors ${!pagination.hasPreviousPage || loading
+                            ? "pointer-events-none border-emerald-200 bg-white text-slate-400"
+                            : "border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 cursor-pointer"
+                            }`}
+                    >
+                        Previous
+                    </button>
+                    <span className="rounded-full bg-emerald-700 px-3 py-2 sm:px-4 text-xs sm:text-sm font-semibold text-white">
+                        {pagination.page} of {pagination.totalPages}
+                    </span>
+                    <button
+                        onClick={() => setCurrentPage(prev => prev + 1)}
+                        disabled={!pagination.hasNextPage || loading}
+                        className={`rounded-full border px-3 py-2 sm:px-4 text-xs sm:text-sm font-semibold transition-colors ${!pagination.hasNextPage || loading
+                            ? "pointer-events-none border-emerald-200 bg-white text-slate-400"
+                            : "border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 cursor-pointer"
+                            }`}
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
         </section>
     );
 }
