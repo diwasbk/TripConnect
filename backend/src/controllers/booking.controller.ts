@@ -7,8 +7,8 @@ import { PaymentModel } from "../models/payment.model";
 import { generateBookingReference } from "../utils/helper";
 
 class BookingController {
-    // Book Package By Package ID
-    bookPackageByPackageId = async (req: Request, res: Response) => {
+    // Create Booking By Package ID
+    createBookingByPackageId = async (req: Request, res: Response) => {
         try {
             const user = req.user as { id: string } | null;
             let isGuest = true;
@@ -95,8 +95,8 @@ class BookingController {
         };
     };
 
-    // Get All Bookings By Status
-    getAllBookingsByStatus = async (req: Request, res: Response) => {
+    // Get All Bookings By Status And Guest Type
+    getAllBookingsByStatusAndGuestType = async (req: Request, res: Response) => {
         try {
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 5;
@@ -366,7 +366,7 @@ class BookingController {
         };
     };
 
-    // Update Booking's Travel Status By Booking ID
+    // Update Booking's Status By Booking ID
     updateBookingStatusByBookingId = async (req: Request, res: Response) => {
         try {
             const bookingExist = await BookingModel.findOne({ _id: req.params.bookingId });

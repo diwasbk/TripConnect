@@ -7,8 +7,8 @@ import { optionalAuthMiddleware } from "../middlewares/auth.middleware";
 const bookingRouter = express.Router();
 const bookingController = new BookingController();
 
-bookingRouter.post("/:packageId", optionalAuthMiddleware, schemaValidateMiddleware(bookingSchema), bookingController.bookPackageByPackageId);
-bookingRouter.get("/all", bookingController.getAllBookingsByStatus);
+bookingRouter.post("/create/:packageId", optionalAuthMiddleware, schemaValidateMiddleware(bookingSchema), bookingController.createBookingByPackageId);
+bookingRouter.get("/all", bookingController.getAllBookingsByStatusAndGuestType);
 bookingRouter.get("/:bookingId", bookingController.getBookingByBookingId);
 bookingRouter.get("/booking-reference/:bookingReference", bookingController.getBookingByBookingReference);
 bookingRouter.get("/by-package-id/:packageId", bookingController.getAllBookingsByPackageId);
