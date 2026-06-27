@@ -93,13 +93,14 @@ export const departureInputSchema = z.object({
 
 /* Photo Upload Schema */
 export const photoUploadSchema = z.object({
-    myfile: z.any()
-        .refine((files) => files?.length > 0, "Please select an image to upload.")
-        .transform((files) => files[0])
+    myfile: z
+        .instanceof(File, { message: "Please select an image to upload." })
         .refine(
             (file) => ["image/jpeg", "image/png", "image/jpg"].includes(file.type),
             "We only support .jpg, .jpeg, and .png formats."
         )
-        .refine((file) => file.size <= 1 * 1024 * 1024, "This image is too heavy (Max 1MB). Please try a smaller one.")
+        .refine(
+            (file) => file.size <= 1 * 1024 * 1024,
+            "This image is too heavy (Max 1MB). Please try a smaller one."
+        )
 });
-export type photoUploadType = z.infer<typeof photoUploadSchema>;

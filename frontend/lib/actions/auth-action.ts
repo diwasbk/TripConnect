@@ -1,5 +1,5 @@
-import { changePasswordType, deleteAccountType, loginType, requestPasswordResetEmailType, resetPasswordType } from "../schemas/auth.schema";
-import { changePassword, deleteUserAccount, getUserById, loginUser, requestPasswordResetEmail, resetAccountPassword, signupUser, updateUserInfoById, whoAmI } from "../api/auth";
+import { changePasswordType, deleteAccountType, loginType, requestPasswordResetEmaiType, resetPassswordType } from "../schemas/auth.schema";
+import { changePassword, deleteUserAccountByUserId, getAllUsers, getUserById, loginUser, requestPasswordResetEmail, resetAccountPassword, signupUser, updateUserInfoById, whoAmI } from "../api/auth";
 import { userType } from "../schemas/user.schema";
 
 // Handle Signup
@@ -73,6 +73,33 @@ export const handleWhoAmI = async () => {
     } catch (err: Error | any) {
         return {
             message: err.message || "User not found!",
+            success: false
+        };
+    };
+};
+
+// Handle Get All Users
+export const handleGetAllUsers = async (page: number = 1, limit: number = 5) => {
+    try {
+        const result = await getAllUsers(page, limit);
+
+        if (!result) {
+            return {
+                message: result.message || "Users not found!",
+                success: false
+            };
+        };
+
+        return {
+            message: result.message || "Users fetched successfully!",
+            result: result.result,
+            pagination: result.pagination,
+            success: true
+        };
+
+    } catch (err: Error | any) {
+        return {
+            message: err.message || "Users not found!",
             success: false
         };
     };
@@ -155,7 +182,7 @@ export const handleChangePassword = async (data: changePasswordType) => {
 };
 
 // Handle Request Password Reset Email
-export const handleRequestPasswordResetEmail = async (data: requestPasswordResetEmailType) => {
+export const handleRequestPasswordResetEmail = async (data: requestPasswordResetEmaiType) => {
     try {
         const result = await requestPasswordResetEmail(data);
 
@@ -180,7 +207,7 @@ export const handleRequestPasswordResetEmail = async (data: requestPasswordReset
 };
 
 // Handle Reset Account Password
-export const handleResetAccountPassword = async (data: resetPasswordType) => {
+export const handleResetAccountPassword = async (data: resetPassswordType) => {
     try {
         const result = await resetAccountPassword(data);
 
@@ -204,10 +231,10 @@ export const handleResetAccountPassword = async (data: resetPasswordType) => {
     };
 };
 
-// Handle Delete User Account
-export const handleDeleteUserAccount = async (data: deleteAccountType) => {
+// Handle Delete User Account By User Id
+export const handleDeleteUserAccountByUserId = async (userId: string, data: deleteAccountType) => {
     try {
-        const result = await deleteUserAccount(data);
+        const result = await deleteUserAccountByUserId(userId, data);
 
         if (!result) {
             return {

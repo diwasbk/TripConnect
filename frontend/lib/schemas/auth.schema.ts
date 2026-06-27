@@ -69,9 +69,9 @@ export const requestPasswordResetEmailSchema = z.object({
         .nonempty("Email is required.")
         .email({ message: "Invalid email." })
 });
-export type requestPasswordResetEmailType = z.infer<typeof requestPasswordResetEmailSchema>;
+export type requestPasswordResetEmaiType = z.infer<typeof requestPasswordResetEmailSchema>;
 
-/* Reset Password Schema */
+/* Reset Passsword Schema */
 export const resetPasswordSchema = z.object({
     token: z
         .string("Token is required."),
@@ -86,7 +86,7 @@ export const resetPasswordSchema = z.object({
     message: "Passwords do not match.",
     path: ["confirmPassword"]
 });
-export type resetPasswordType = z.infer<typeof resetPasswordSchema>;
+export type resetPassswordType = z.infer<typeof resetPasswordSchema>;
 
 // Delete Account Schema
 export const deleteAccountSchema = z.object({

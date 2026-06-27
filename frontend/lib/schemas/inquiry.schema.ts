@@ -23,7 +23,6 @@ export const inquirySchema = z.object({
 });
 export type inquiryType = z.infer<typeof inquirySchema>;
 
-
 /* Inquiry Reply Schema */
 export const inquiryReplySchema = z.object({
     reply: z
