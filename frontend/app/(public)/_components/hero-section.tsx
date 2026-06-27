@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { heroStats } from "@/lib/constants/constant";
+import { heroStats } from "@/lib/helpers/constant";
 import { useEffect, useState } from "react";
 import { handleGetTopBookedPackages } from "@/lib/actions/package-action";
 import { toast } from "react-toastify";

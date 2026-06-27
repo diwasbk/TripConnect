@@ -8,7 +8,7 @@ export default function Page() {
                 <UserSideBar />
             </div>
             <div className="flex-1 overflow-y-auto">
-                <DeleteUserAccountSection />
+                <DeleteUserAccountSection userId="" />
             </div>
         </div>
     );

@@ -1,4 +1,3 @@
-
 import BookingSection from "./_components/booking-section";
 
 export default function HomePage() {

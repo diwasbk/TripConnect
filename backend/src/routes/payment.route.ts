@@ -5,7 +5,7 @@ const paymentRouter = express.Router();
 const paymentController = new PaymentController();
 
 paymentRouter.get("/all/:paymentStatus", paymentController.getAllPaymentsByPaymentStatus);
-paymentRouter.get("/:paymentId", paymentController.getPaymentByPaymentId);
+paymentRouter.get("/:paymentId", paymentController.getPaymentByBookingId);
 paymentRouter.patch("/update/:paymentId/:paymentStatus", paymentController.updatePaymentStatusByPaymentId);
 paymentRouter.get("/esewa/initialize/:paymentId", paymentController.initializeEsewaPayment);
 paymentRouter.get("/esewa/verify-payment", paymentController.verifyEsewaPayment);

@@ -1,4 +1,4 @@
-import { changePasswordType, deleteAccountType, loginType, requestPasswordResetEmailType, resetPasswordType } from "../schemas/auth.schema";
+import { changePasswordType, deleteAccountType, loginType, requestPasswordResetEmaiType, resetPassswordType } from "../schemas/auth.schema";
 import { userType } from "../schemas/user.schema";
 import axiosInstance from "./axios";
 import API from "./endpoint";
@@ -39,6 +39,18 @@ export const whoAmI = async () => {
     };
 };
 
+// Get All Users
+export const getAllUsers = async (page: number = 1, limit: number = 5) => {
+    try {
+        const response = await axiosInstance.get(API.AUTH.GET_ALL_USERS(page, limit));
+
+        return response.data;
+
+    } catch (err: Error | any) {
+        throw new Error(err.response?.data?.message || err.response || "Users not found!");
+    };
+};
+
 // Get User By ID
 export const getUserById = async (userId: string) => {
     try {
@@ -76,7 +88,7 @@ export const changePassword = async (data: changePasswordType) => {
 };
 
 // Request Password Reset Email
-export const requestPasswordResetEmail = async (data: requestPasswordResetEmailType) => {
+export const requestPasswordResetEmail = async (data: requestPasswordResetEmaiType) => {
     try {
         const response = await axiosInstance.post(API.AUTH.REQUEST_PASSWORD_RESET_EMAIL, data);
 
@@ -88,7 +100,7 @@ export const requestPasswordResetEmail = async (data: requestPasswordResetEmailT
 };
 
 // Reset Account Password
-export const resetAccountPassword = async (data: resetPasswordType) => {
+export const resetAccountPassword = async (data: resetPassswordType) => {
     try {
         const response = await axiosInstance.patch(API.AUTH.RESET_ACCOUNT_PASSWORD, data);
 
@@ -99,10 +111,10 @@ export const resetAccountPassword = async (data: resetPasswordType) => {
     };
 };
 
-// Delete User Account
-export const deleteUserAccount = async (data: deleteAccountType) => {
+// Delete User Account By User ID
+export const deleteUserAccountByUserId = async (userId: string, data: deleteAccountType) => {
     try {
-        const response = await axiosInstance.delete(API.AUTH.DELETE_ACCOUNT, { data });
+        const response = await axiosInstance.delete(API.AUTH.DELETE_ACCOUNT_BY_ID(userId), { data });
 
         return response.data;
 

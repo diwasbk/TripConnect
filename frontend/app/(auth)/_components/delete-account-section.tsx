@@ -1,5 +1,6 @@
 "use client";
-import { handleDeleteUserAccount } from "@/lib/actions/auth-action";
+import { handleDeleteUserAccountByUserId } from "@/lib/actions/auth-action";
+import { getDecodedTokenFromCookie } from "@/lib/cookie";
 import { deleteAccountSchema, deleteAccountType } from "@/lib/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -7,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-export default function DeleteUserAccountSection() {
+export default function DeleteUserAccountSection({ userId }: { userId: string }) {
     const router = useRouter();
 
     const {
@@ -20,7 +21,15 @@ export default function DeleteUserAccountSection() {
 
     const onSubmit = async (data: deleteAccountType) => {
         try {
-            const res = await handleDeleteUserAccount(data);
+            // Use userId prop if provided (admin), otherwise use decoded token (user)
+            let profileId: string | any = userId;
+
+            if (!profileId) {
+                const decoded = await getDecodedTokenFromCookie();
+                profileId = decoded.id;
+            };
+
+            const res = await handleDeleteUserAccountByUserId(profileId, data);
 
             if (!res.success) {
                 throw new Error(res.message || "Failed to delete account!");
@@ -89,8 +98,8 @@ export default function DeleteUserAccountSection() {
                         type="submit"
                         disabled={isSubmitting}
                         className={`inline-flex w-full items-center justify-center rounded-full bg-red-700 px-5 py-3.5 text-base font-semibold text-white transition-all ${isSubmitting
-                                ? "opacity-50"
-                                : "cursor-pointer hover:bg-red-800"
+                            ? "opacity-50"
+                            : "cursor-pointer hover:bg-red-800"
                             }`}
                     >
                         {isSubmitting
