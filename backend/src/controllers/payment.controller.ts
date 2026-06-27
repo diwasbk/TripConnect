@@ -33,7 +33,15 @@ class PaymentController {
 
             const total = await PaymentModel.countDocuments({ paymentStatus: paymentStatus })
 
-            const result = await PaymentModel.find({ paymentStatus: paymentStatus }).skip((page - 1) * limit).limit(limit);
+            const result = await PaymentModel.find({ paymentStatus: paymentStatus })
+                .populate({
+                    path: "bookingId",
+                    select: "bookingReference"
+                })
+                .populate({
+                    path: "promoCodeId",
+                    select: "code"
+                }).skip((page - 1) * limit).limit(limit);
 
             res.status(200).send({
                 message: result.length ? `${paymentStatus} payments fetched successfully!` : " Payments not found!",
@@ -58,8 +66,8 @@ class PaymentController {
         };
     };
 
-    // Get All Payments By Payment Id
-    getPaymentByPaymentId = async (req: Request, res: Response) => {
+    // Get Payment By Booking Id
+    getPaymentByBookingId = async (req: Request, res: Response) => {
         try {
             const paymentExist = await BookingModel.findOne({ _id: req.params.bookingId });
 

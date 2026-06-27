@@ -10,6 +10,7 @@ import galleryRouter from "./routes/gallery.route";
 import cors from "cors";
 import subscriberRouter from "./routes/subscriber.route";
 import { CLIENT_URL } from "./config/config";
+import summaryRouter from "./routes/summary.route";
 
 const app: Application = express();
 
@@ -31,5 +32,6 @@ app.use("/api/payment", paymentRouter);
 app.use("/api/inquiry", inquiryRouter);
 app.use("/api/gallery", galleryRouter);
 app.use("/api/subscriber", subscriberRouter);
+app.use("/api/summary", summaryRouter);
 
 export default app;
