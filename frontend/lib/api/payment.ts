@@ -2,9 +2,9 @@ import axiosInstance from "./axios";
 import API from "./endpoint";
 
 // Get All Payments By Status
-export const getAllPaymentsByStatus = async (paymentStatus: string) => {
+export const getAllPaymentsByStatus = async (paymentStatus: string, page: number = 1, limit: number = 5) => {
     try {
-        const response = await axiosInstance.get(API.PAYMENT.GET_ALL_BY_STATUS(paymentStatus));
+        const response = await axiosInstance.get(API.PAYMENT.GET_ALL_BY_STATUS(paymentStatus, page, limit));
 
         return response.data;
 

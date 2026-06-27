@@ -42,7 +42,7 @@ const API = {
     },
     BOOKING: {
         CREATE_BY_PACKAGE_ID: (packageId: string) => `/booking/create/${packageId}`,
-        GET_ALL_BY_STATUS_AND_GUEST_TYPE: (status: string, isGuest: boolean, page: number, limit: number) => `/booking/all?status=${status}&isGuest=${isGuest}&page=${page}&limit=${limit}`,
+        GET_ALL_BY_STATUS_AND_GUEST_TYPE: (status: string, isGuest: boolean, page: number, limit: number) => `/booking/all/${status}/${isGuest}?page=${page}&limit=${limit}`,
         GET_BY_BOOKING_ID: (bookingId: string) => `/booking/booking-id/${bookingId}`,
         GET_BY_BOOKING_REFERENCE: (bookingReference: string) => `/booking/booking-reference/${bookingReference}`,
         GET_ALL_BY_PACKAGE_ID: (packageId: string, page: number, limit: number) => `/booking/by-package-id/${packageId}?page=${page}&limit=${limit}`,
@@ -52,11 +52,11 @@ const API = {
         DELETE_BY_ID: (bookingId: string) => `/booking/delete/${bookingId}`
     },
     PAYMENT: {
-        GET_ALL_BY_STATUS: (paymentStatus: string) => `/payment/all/${paymentStatus}`,
+        GET_ALL_BY_STATUS: (paymentStatus: string, page: number, limit: number) => `/payment/all/${paymentStatus}?page=${page}&limit=${limit}`,
         GET_BY_ID: (paymentId: string) => `/payment/${paymentId}`,
-        UPDATE_BY_STATUS: (paymentId: string, paymentStatus: string) => `/update/${paymentId}/${paymentStatus}`,
-        INITIALIZE_ESEWA_BY_ID: (paymentId: string) => `/esewa/initialize/${paymentId}`,
-        VERIFY_ESEWA: (data: string) => `/esewa/verify-payment?data=${data}`
+        UPDATE_BY_STATUS: (paymentId: string, paymentStatus: string) => `/payment/update/${paymentId}/${paymentStatus}`,
+        INITIALIZE_ESEWA_BY_ID: (paymentId: string) => `/payment/esewa/initialize/${paymentId}`,
+        VERIFY_ESEWA: (data: string) => `/payment/esewa/verify-payment?data=${data}`
     },
     PROMOCODE: {
         CREATE: "/promocode/create",
@@ -90,6 +90,11 @@ const API = {
         GET_ALL_BY_STATUS: (status: string, page: number, limit: number) => `/subscriber/all/${status}?page=${page}&limit=${limit}`,
         UPDATE_STATUS_BY_EMAIL: (email: string, status: string) => `/subscriber/update-status/${email}/${status}`,
         DELETE_BY_ID: (subscriberId: string) => `/subscriber/delete/${subscriberId}`
+    },
+    SUMMARY: {
+        DASHBOARD: "/summary/dashboard",
+        PACKAGE: "/summary/package",
+        BOOKING: "/summary/booking"
     }
 };
 

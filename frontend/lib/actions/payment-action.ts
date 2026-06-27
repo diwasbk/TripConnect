@@ -1,9 +1,9 @@
 import { getAllPaymentsByStatus, getPaymentById, updatePaymentStatusById, initializeEsewaPaymentById, verifyEsewaPayment } from "../api/payment";
 
 // Handle Get All Payments By Status
-export const handleGetAllPaymentsByStatus = async (paymentStatus: string) => {
+export const handleGetAllPaymentsByStatus = async (paymentStatus: string, page: number = 1, limit: number = 5) => {
     try {
-        const result = await getAllPaymentsByStatus(paymentStatus);
+        const result = await getAllPaymentsByStatus(paymentStatus, page, limit);
 
         if (!result.success) {
             return {
