@@ -1,5 +1,5 @@
-import { createBookingByPackageId, getAllBookingsByStatusAndGuestType, getBookingByBookingId, getBookingByBookingReference, getAllBookingsByPackageId, getAllBookingsByUserId, updateBookingDetailsByBookingId, updateBookingStatusByBookingId, deleteBookingByBookingId } from "../api/booking";
-import { bookingType } from "../schemas/booking.schema";
+import { createBookingByPackageId, getAllBookingsByStatusAndGuestType, getBookingByBookingId, getBookingByBookingReference, getAllBookingsByPackageId, getAllBookingsByUserId, updateBookingDetailsByBookingId, updateBookingStatusByBookingId, deleteBookingByBookingId, cancelBookingByBookingIdAndCancellationReason } from "../api/booking";
+import { bookingCancelType, bookingType } from "../schemas/booking.schema";
 
 // Handle Create Booking By Package ID
 export const handleCreateBookingByPackageId = async (packageId: string, data: bookingType) => {
@@ -233,6 +233,31 @@ export const handleDeleteBookingByBookingId = async (bookingId: string) => {
     } catch (err: Error | any) {
         return {
             message: err.message || "Failed to delete booking!",
+            success: false
+        };
+    };
+};
+
+// Handle Cancel Booking By Booking ID And Cancellation Reason
+export const handleCancelBookingByBookingIdAndCancellationReason  = async (bookingId: string, data: bookingCancelType) => {
+    try {
+        const result = await cancelBookingByBookingIdAndCancellationReason(bookingId, data);
+
+        if (!result) {
+            return {
+                message: result.message || "Failed to cancel booking!",
+                success: false
+            };
+        };
+
+        return {
+            message: result.message || "Booking cancelled successfully!",
+            success: true
+        };
+
+    } catch (err: Error | any) {
+        return {
+            message: err.message || "Failed to delete account!",
             success: false
         };
     };

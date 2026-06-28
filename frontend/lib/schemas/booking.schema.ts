@@ -28,3 +28,12 @@ export const bookingSchema = z.object({
         .optional()
 });
 export type bookingType = z.infer<typeof bookingSchema>;
+
+// Cancel Booking Schema
+export const bookingCancelSchema = z.object({
+    cancellationReason: z
+        .string("Cancellation reason is required.")
+        .nonempty("Cancellation reason is required.")
+        .min(5, "Cancellation reason must be at least 5 characters."),
+});
+export type bookingCancelType = z.infer<typeof bookingCancelSchema>;

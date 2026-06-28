@@ -1,4 +1,4 @@
-import { bookingType } from "../schemas/booking.schema";
+import { bookingCancelType, bookingType } from "../schemas/booking.schema";
 import axiosInstance from "./axios";
 import API from "./endpoint";
 
@@ -107,5 +107,17 @@ export const deleteBookingByBookingId = async (bookingId: string) => {
 
     } catch (err: Error | any) {
         throw new Error(err.response?.data?.message || err.response || "Failed to delete booking!");
+    };
+};
+
+// Cancel Booking By Booking ID And Cancellation Reason
+export const cancelBookingByBookingIdAndCancellationReason = async (bookingId: string, data: bookingCancelType) => {
+    try {
+        const response = await axiosInstance.patch(API.BOOKING.CANCEL_BY_ID_AND_CANCELLATION_REASON(bookingId), data);
+
+        return response.data;
+
+    } catch (err: Error | any) {
+        throw new Error(err.response?.data?.message || err.response || "Failed to cancel booking!");
     };
 };

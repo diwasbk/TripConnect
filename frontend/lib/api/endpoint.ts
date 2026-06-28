@@ -49,7 +49,8 @@ const API = {
         GET_ALL_BY_USER_ID: (userId: string, page: number, limit: number) => `/booking/by-user-id/${userId}?page=${page}&limit=${limit}`,
         UPDATE_DETAILS_BY_ID: (bookingId: string) => `/booking/update-details/${bookingId}`,
         UPDATE_STATUS_BY_ID: (bookingId: string, status: string) => `/booking/update-status/${bookingId}/${status}`,
-        DELETE_BY_ID: (bookingId: string) => `/booking/delete/${bookingId}`
+        DELETE_BY_ID: (bookingId: string) => `/booking/delete/${bookingId}`,
+        CANCEL_BY_ID_AND_CANCELLATION_REASON: (bookingId: string) => `/booking/cancel/${bookingId}`
     },
     PAYMENT: {
         GET_ALL_BY_STATUS: (paymentStatus: string, page: number, limit: number) => `/payment/all/${paymentStatus}?page=${page}&limit=${limit}`,

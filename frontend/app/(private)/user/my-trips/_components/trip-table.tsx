@@ -1,11 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, Search, CheckCircle2, CreditCard } from "lucide-react";
+import { Eye, Search, CheckCircle2, CreditCard, X } from "lucide-react";
 import { toast } from "react-toastify";
 import { handleGetAllBookingsByUserId, handleGetBookingByBookingReference } from "@/lib/actions/booking-action";
 import { getDecodedTokenFromCookie } from "@/lib/cookie";
 import { formatDate } from "@/lib/helpers/helper";
+import { FcCancel } from "react-icons/fc";
+import CancelBookingSection from "@/app/(private)/_components/cancel-booking-section";
 
 const AVATAR_COLORS = [
     "bg-emerald-100 text-emerald-800 border-emerald-200",
@@ -23,7 +25,7 @@ const STATUS_BADGE: Record<string, string> = {
 };
 
 export default function TripTable() {
-    const router = useRouter(); // 2. Initialize router
+    const router = useRouter();
     const [bookings, setBookings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [detailLoading, setDetailLoading] = useState(false);
@@ -32,31 +34,34 @@ export default function TripTable() {
     const [bookingDetail, setBookingDetail] = useState<any>(null);
     const [showDetails, setShowDetails] = useState(false);
 
+    const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+    const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
     const [pagination, setPagination] = useState<any>(null);
 
     // Initial load: Get all user bookings
-    useEffect(() => {
-        const fetchBookings = async () => {
-            setLoading(true);
-            try {
-                const decoded = await getDecodedTokenFromCookie();
-                const res = await handleGetAllBookingsByUserId(decoded.id, currentPage);
+    const fetchBookings = async () => {
+        setLoading(true);
+        try {
+            const decoded = await getDecodedTokenFromCookie();
+            const res = await handleGetAllBookingsByUserId(decoded.id, currentPage);
 
-                if (res.success) {
-                    setBookings(res.result);
-                    setPagination(res.pagination || null);
-                } else {
-                    throw new Error(res.message || "Failed to fetch bookings!");
-                }
-            } catch (err: any) {
-                toast.error(err.message || "Failed to fetch bookings!");
-            } finally {
-                setLoading(false);
+            if (res.success) {
+                setBookings(res.result);
+                setPagination(res.pagination || null);
+            } else {
+                throw new Error(res.message || "Failed to fetch bookings!");
             }
-        };
+        } catch (err: any) {
+            toast.error(err.message || "Failed to fetch bookings!");
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchBookings();
     }, []);
 
@@ -87,6 +92,18 @@ export default function TripTable() {
         } finally {
             setDetailLoading(false);
         }
+    };
+
+    // Handle Cancel Side Drawer Open
+    const handleCancelClick = (id: string) => {
+        setSelectedBookingId(id);
+        setIsEditFormOpen(true);
+    };
+
+    // Close form and refresh layout data
+    const handleFormSuccess = () => {
+        setIsEditFormOpen(false);
+        fetchBookings();
     };
 
     // Clean toggle handler to reset view states cleanly
@@ -153,85 +170,111 @@ export default function TripTable() {
                     )}
 
                     <div className="bg-white border border-emerald-100 rounded-2xl overflow-hidden shadow-md">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr className="border-b border-emerald-50 bg-slate-50/75">
-                                    <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold">Traveler</th>
-                                    <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold">Contact Info</th>
-                                    <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold">Reference</th>
-                                    <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold">Travel Date</th>
-                                    <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold">Party Size</th>
-                                    <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold">Status</th>
-                                    <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold text-right">Details</th>
-                                </tr>
-                            </thead>
-
-                            <tbody className="divide-y divide-emerald-50/60">
-                                {!loading && filtered.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={7} className="text-center py-12 text-sm text-slate-400">
-                                            No tracking references record matched this criteria.
-                                        </td>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead>
+                                    <tr className="border-b border-emerald-50 bg-slate-50/75">
+                                        <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold">Traveler</th>
+                                        <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold">Contact Info</th>
+                                        <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold">Reference</th>
+                                        <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold">Travel Date</th>
+                                        <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold">Party Size</th>
+                                        <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold">Status</th>
+                                        <th className="px-5 py-4 text-[10px] text-slate-500 uppercase tracking-[0.15em] font-bold text-right">Details</th>
                                     </tr>
-                                ) : (
-                                    filtered.map((booking, idx) => (
-                                        <tr key={booking._id} className="hover:bg-emerald-50/20 transition-colors duration-200">
-                                            <td className="px-5 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-11 h-9 rounded-full flex items-center justify-center border text-xs font-bold ${AVATAR_COLORS[idx % AVATAR_COLORS.length]}`}>
-                                                        {booking.fullName?.charAt(0).toUpperCase() || "U"}
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-black text-slate-950">{booking.fullName}</p>
-                                                        <p className="text-[11px] font-medium text-slate-400 capitalize">
-                                                            {booking.isGuest ? "Guest User" : "Account Holder"}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-5 py-4">
-                                                <p className="text-sm font-medium text-slate-700">{booking.email}</p>
-                                                <p className="text-xs text-slate-400 mt-0.5">{booking.phoneNumber}</p>
-                                            </td>
-                                            <td className="px-5 py-4">
-                                                <span className="text-xs font-mono bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-md text-slate-700 font-semibold">
-                                                    {booking.bookingReference}
-                                                </span>
-                                            </td>
-                                            <td className="px-5 py-4 text-sm font-medium text-slate-700">
-                                                {formatDate(booking.travelDate)}
-                                            </td>
-                                            <td className="px-5 py-4 text-sm font-bold text-slate-900">
-                                                {booking.noOfTravelers || booking.noOfTravelers} Pax
-                                            </td>
-                                            <td className="px-5 py-4">
-                                                <span className={`inline-flex font-bold px-2.5 py-1 rounded-full border ${STATUS_BADGE[booking.status] || "bg-slate-100 text-slate-700"}`}>
-                                                    {booking.status}
-                                                </span>
-                                            </td>
-                                            <td className="px-5 py-4 text-right">
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedBooking(booking);
-                                                        setShowDetails(true);
-                                                        fetchBookingDetail(booking.bookingReference);
-                                                    }}
-                                                    className="p-1.5 rounded-full border border-slate-200 text-slate-500 hover:text-emerald-700 hover:border-emerald-200 hover:bg-emerald-50 transition-all cursor-pointer inline-flex items-center justify-center"
-                                                    title="Inspect Requests"
-                                                >
-                                                    <Eye className="w-4 h-4" />
-                                                </button>
+                                </thead>
+
+                                <tbody className="divide-y divide-emerald-50/60">
+                                    {!loading && filtered.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={7} className="text-center py-12 text-sm text-slate-400">
+                                                No tracking references record matched this criteria.
                                             </td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                                    ) : (
+                                        filtered.map((booking, idx) => (
+                                            <tr key={booking._id} className="hover:bg-emerald-50/20 transition-colors duration-200">
+                                                <td className="px-5 py-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`w-11 h-9 rounded-full flex items-center justify-center border text-xs font-bold ${AVATAR_COLORS[idx % AVATAR_COLORS.length]}`}>
+                                                            {booking.fullName?.charAt(0).toUpperCase() || "U"}
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-black text-slate-950 truncate">{booking.fullName}</p>
+                                                            <p className="text-[11px] font-medium text-slate-400 capitalize truncate">
+                                                                {booking.isGuest ? "Guest User" : "Account Holder"}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-5 py-4">
+                                                    <p className="text-sm font-medium text-slate-700">{booking.email}</p>
+                                                    <p className="text-xs text-slate-400 mt-0.5">{booking.phoneNumber}</p>
+                                                </td>
+                                                <td className="px-5 py-4">
+                                                    <span className="text-xs font-mono bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-md text-slate-700 font-semibold">
+                                                        {booking.bookingReference}
+                                                    </span>
+                                                </td>
+                                                <td className="px-5 py-4 text-sm font-medium text-slate-700">
+                                                    {formatDate(booking.travelDate)}
+                                                </td>
+                                                <td className="px-5 py-4 text-sm font-bold text-slate-900">
+                                                    {booking.noOfTravelers || booking.noOfTravelers} Pax
+                                                </td>
+                                                <td className="px-5 py-4">
+                                                    <span className={`inline-flex font-bold px-2.5 py-1 rounded-full border ${STATUS_BADGE[booking.status] || "bg-slate-100 text-slate-700"}`}>
+                                                        {booking.status}
+                                                    </span>
+                                                </td>
+
+                                                <td className="px-5 py-4 text-right">
+                                                    <div className="flex justify-end gap-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedBooking(booking);
+                                                                setShowDetails(true);
+                                                                fetchBookingDetail(booking.bookingReference);
+                                                            }}
+                                                            className="p-1.5 rounded-full border border-slate-200 text-slate-500 hover:text-emerald-700 hover:border-emerald-200 hover:bg-emerald-50 transition-all cursor-pointer inline-flex items-center justify-center"
+                                                            title="Inspect Requests"
+                                                        >
+                                                            <Eye className="w-4 h-4" />
+                                                        </button>
+                                                        {booking.status === "pending" && (
+                                                            <button
+                                                                onClick={() => handleCancelClick(booking._id)}
+                                                                className="p-1.5 rounded-full border border-red-200 hover:bg-red-50 hover:text-red-700 cursor-pointer"
+                                                            >
+                                                                <FcCancel size={15} />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* SLIDING SIDE DRAWER MODAL - USER EDIT OVERLAY */}
+            {isEditFormOpen && (
+                <div className="fixed h-full inset-0 z-50 flex items-center justify-end bg-slate-950/40 backdrop-blur-xs p-4 sm:p-6 overflow-y-auto">
+                    <div className="relative w-full max-w-4xl my-auto animate-in slide-in-from-right duration-200">
+                        <button
+                            onClick={() => setIsEditFormOpen(false)}
+                            className="absolute top-10 right-10 p-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors cursor-pointer z-50"
+                        >
+                            <X size={20} />
+                        </button>
+                        <CancelBookingSection bookingId={selectedBookingId} onSuccess={handleFormSuccess} />
+                    </div>
+                </div>
+            )}
 
             {/* PAGINATION */}
             {pagination && (

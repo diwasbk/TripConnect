@@ -1,4 +1,4 @@
-import { changePasswordType, deleteAccountType, loginType, requestPasswordResetEmaiType, resetPassswordType } from "../schemas/auth.schema";
+import { changePasswordType, deleteAccountType, loginType, requestPasswordResetEmailType, resetPasswordType } from "../schemas/auth.schema";
 import { userType } from "../schemas/user.schema";
 import axiosInstance from "./axios";
 import API from "./endpoint";
@@ -88,7 +88,7 @@ export const changePassword = async (data: changePasswordType) => {
 };
 
 // Request Password Reset Email
-export const requestPasswordResetEmail = async (data: requestPasswordResetEmaiType) => {
+export const requestPasswordResetEmail = async (data: requestPasswordResetEmailType) => {
     try {
         const response = await axiosInstance.post(API.AUTH.REQUEST_PASSWORD_RESET_EMAIL, data);
 
@@ -100,7 +100,7 @@ export const requestPasswordResetEmail = async (data: requestPasswordResetEmaiTy
 };
 
 // Reset Account Password
-export const resetAccountPassword = async (data: resetPassswordType) => {
+export const resetAccountPassword = async (data: resetPasswordType) => {
     try {
         const response = await axiosInstance.patch(API.AUTH.RESET_ACCOUNT_PASSWORD, data);
 
