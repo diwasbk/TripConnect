@@ -42,5 +42,17 @@ export const bookingSchema = z.object({
     status: z
         .enum(["pending", "confirmed", "in-progress", "completed", "cancelled"])
         .default("pending"),
+    cancellationReason: z
+        .string()
+        .optional()
 });
 export type bookingType = z.infer<typeof bookingSchema>;
+
+// Cancel Booking Schema
+export const bookingCancelSchema = z.object({
+    cancellationReason: z
+        .string()
+        .nonempty("Cancellation reason is required.")
+        .min(5, "Cancellation reason must be at least 5 characters."),
+});
+export type bookingCancelType = z.infer<typeof bookingCancelSchema>;

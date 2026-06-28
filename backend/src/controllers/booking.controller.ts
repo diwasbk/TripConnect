@@ -101,7 +101,7 @@ class BookingController {
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 5;
 
-            const status = req.query.status as | "pending" | "confirmed" | "in-progress" | "completed" | "cancelled" | undefined;
+            const status = req.params.status as | "pending" | "confirmed" | "completed" | "cancelled" | undefined;
 
             type BookingStatus = (typeof bookingStatuses)[number];
 
@@ -110,13 +110,13 @@ class BookingController {
                     message: "Invalid booking status!",
                     success: false,
                 });
-            }
+            };
 
             let isGuest: boolean;
 
-            if (req.query.isGuest == "true") {
+            if (req.params.isGuest == "true") {
                 isGuest = true;
-            } else if (req.query.isGuest == "false") {
+            } else if (req.params.isGuest == "false") {
                 isGuest = false;
             } else {
                 return res.status(400).send({
@@ -296,7 +296,7 @@ class BookingController {
         try {
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 5;
-            
+
             const userExist = await UserModel.findOne({ _id: req.params.userId });
 
             if (!userExist) {
@@ -306,8 +306,8 @@ class BookingController {
                 });
             };
 
-            const total = await BookingModel.countDocuments({  userId: req.params.userId});
-            
+            const total = await BookingModel.countDocuments({ userId: req.params.userId });
+
             const result = await BookingModel.find({ userId: req.params.userId }).skip((page - 1) * limit).limit(limit);
 
             res.status(200).send({
@@ -423,6 +423,37 @@ class BookingController {
 
             res.status(200).send({
                 message: "Booking deleted successfully!",
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
+
+    // Cancel Booking By Booking ID And Cancellation Reason
+    cancelBookingByBookingIdAndCancellationReason = async (req: Request, res: Response) => {
+        try {
+            const bookingExist = await BookingModel.findOne({ _id: req.params.bookingId });
+
+            if (!bookingExist) {
+                return res.status(404).send({
+                    message: "Booking not found!",
+                    success: false
+                });
+            };
+
+            await BookingModel.findOneAndUpdate(
+                { _id: req.params.bookingId },
+                { $set: { status: "cancelled", cancellationReason: req.body.cancellationReason } }
+            );
+
+            res.status(200).send({
+                message: "Booking cancelled successfully!",
                 success: true
             });
 
