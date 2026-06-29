@@ -1,4 +1,4 @@
-import SuccessSection from "./_components/success-section";
+import SuccessSection from "../_components/success-section";
 
 export default function Page() {
     return (
