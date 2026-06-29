@@ -1,10 +1,11 @@
 "use client";
 import { handleGetBookingByBookingReference } from "@/lib/actions/booking-action";
 import { handleApplyPromoCodeByPaymentId } from "@/lib/actions/promocode-action";
+import { initializeEsewaPaymentById } from "@/lib/api/payment";
+import { redirectEsewa } from "@/lib/payment/redirect-esewa";
 import { promoCodeSchema, promoCodeType } from "@/lib/schemas/promocode.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import {  useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiCheckCircle } from "react-icons/fi";
@@ -13,9 +14,6 @@ import { toast } from "react-toastify";
 export default function PaymentSection({ navUrl }: { navUrl: string }) {
     const searchParams = useSearchParams();
     const bookingReference = searchParams.get("bookingReference") as string;
-
-    const params = useParams();
-    const packageSlug = params?.slug as string;
 
     const [bookingDetail, setBookingDetail] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -76,12 +74,28 @@ export default function PaymentSection({ navUrl }: { navUrl: string }) {
         };
     };
 
+    const handleInitializePayment = async () => {
+        try {
+            const res = await initializeEsewaPaymentById(bookingDetail?.paymentId);
+
+            if (!res.success) {
+                throw new Error(res.message || "Payment initiation failed!");
+            };
+
+            redirectEsewa(res);
+
+        } catch (err: any) {
+            toast.error(err.message || "Failed to initialize payment!");
+        };
+    };
+
     const summaryRows = [
         { label: "Price per traveler", value: `Rs ${bookingDetail?.pricePerTraveler?.toLocaleString("en-US") || "0"}` },
         { label: "Travelers", value: String(bookingDetail?.noOfTravelers || "N/A") },
         { label: "Discount %", value: `${bookingDetail?.discountPercentage}%` },
         { label: "Promo code", value: bookingDetail?.promoCode || "N/A" }
     ];
+
     return (
         <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <section className="overflow-hidden rounded-3xl border border-emerald-100 bg-white shadow-[0_14px_40px_rgba(15,122,75,0.06)]">
@@ -180,13 +194,13 @@ export default function PaymentSection({ navUrl }: { navUrl: string }) {
                         </form>
                     </div>
                     <div className="space-y-4 px-4 py-4 sm:px-5 sm:py-5">
-                        <Link
-                            href={`${navUrl}packages/${packageSlug}/booking/payment/success?bookingReference=${bookingReference}`}
+                        <button
+                            onClick={() => { handleInitializePayment() }}
                             className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-emerald-700 to-emerald-800 px-6 text-base font-semibold text-white shadow-[0_18px_35px_rgba(15,122,75,0.22)] transition-all duration-300 hover:-translate-y-0.5 hover:from-emerald-800 hover:to-emerald-900 hover:cursor-pointer"
                         >
                             <img src="/images/esewa.png" alt="eSewa" className="h-5 w-5 object-contain mr-2" />
                             <span>Pay with eSewa</span>
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </section>
