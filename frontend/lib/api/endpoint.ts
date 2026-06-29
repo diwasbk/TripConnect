@@ -18,7 +18,7 @@ const API = {
         GET_TOP_BOOKED: "/package/top-booked",
         GET_BY_ID: (packageId: string) => `/package/${packageId}`,
         GET_BY_SLUG: (slug: string) => `/package/slug/${slug}`,
-        GET_BY_STATUS: (status: string, page: number, limit: number) => `/package/all?status=${status}&page=${page}&limit=${limit}`,
+        GET_BY_STATUS: (status: string, page: number, limit: number) => `/package/all/${status}?page=${page}&limit=${limit}`,
         GET_BY_ACTIVE_STATUS: (isActive: boolean, page: number, limit: number) => `/package/active-status/${isActive}?page=${page}&limit=${limit}`,
         UPDATE_BASIC_INFO_BY_ID: (packageId: string) => `/package/update-basic-info/${packageId}`,
         DELETE_BY_ID: (packageId: string) => `/package/delete/${packageId}`,
@@ -70,14 +70,15 @@ const API = {
     },
     GALLERY: {
         CREATE: "/gallery/create",
-        GET_BY_SLUG: (slug: string) => `/gallery/${slug}`,
+        GET_BY_ID: (galleryId: string) => `/gallery/${galleryId}`,
+        GET_BY_SLUG: (slug: string) => `/gallery/slug/${slug}`,
         GET_ALL_BY_STATUS: (isActive: boolean, page: number, limit: number) => `/gallery/all/${isActive}?page=${page}&limit=${limit}`,
         UPDATE_INFO_BY_ID: (galleryId: string) => `/gallery/update-info/${galleryId}`,
-        UPLOAD_COVER_PHOTO_BY_ID: (galleryId: string) => `/upload-cover-photo/${galleryId}`,
-        UPLOAD_PHOTO_BY_ID: (galleryId: string) => `/upload-photo/${galleryId}`,
-        DELETE_PHOTO_BY_ID: (galleryId: string) => `/delete-photo/${galleryId}`,
-        ACTIVATE_OR_DEACTIVATE_BY_ID: (galleryId: string, isActive: boolean) => `/activate-deactivate/:${galleryId}/${isActive}`,
-        DELETE_BY_ID: (galleryId: string) => `/delete/${galleryId}`
+        UPLOAD_COVER_PHOTO_BY_ID: (galleryId: string) => `/gallery/upload-cover-photo/${galleryId}`,
+        UPLOAD_PHOTO_BY_ID: (galleryId: string) => `/gallery/upload-photo/${galleryId}`,
+        DELETE_PHOTO_BY_ID: (galleryId: string) => `/gallery/delete-photo/${galleryId}`,
+        ACTIVATE_OR_DEACTIVATE_BY_ID: (galleryId: string, isActive: boolean) => `/gallery/activate-deactivate/${galleryId}/${isActive}`,
+        DELETE_BY_ID: (galleryId: string) => `/gallery/delete/${galleryId}`
     },
     INQUIRY: {
         SEND: "/inquiry/send",

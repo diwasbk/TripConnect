@@ -1,10 +1,10 @@
-import { createGallery, getGalleryBySlug, getAllGalleriesByStatus, updateGalleryInfoById, uploadCoverPhotoById, uploadPhotoById, deletePhotoById, activateOrDeactivateGalleryById, deleteGalleryById } from "../api/gallery";
+import { createGallery, getGalleryBySlug, getAllGalleriesByStatus, updateGalleryInfoById, uploadCoverPhotoById, uploadGalleryPhotoById, deletePhotoById, activateOrDeactivateGalleryById, deleteGalleryById, getGalleryByGalleryId } from "../api/gallery";
 import { deleteGalleryPhotoType, galleryType } from "../schemas/gallery.schema";
 
 // Handle Create Gallery
-export const handleCreateGallery = async () => {
+export const handleCreateGallery = async (data: galleryType) => {
     try {
-        const result = await createGallery();
+        const result = await createGallery(data);
 
         if (!result.success) {
             return {
@@ -22,6 +22,32 @@ export const handleCreateGallery = async () => {
     } catch (err: Error | any) {
         return {
             message: err.message || "Failed to create gallery!",
+            success: false
+        };
+    };
+};
+
+// Handle Get Gallery By Gallery ID
+export const handleGetGalleryByGalleryId = async (galleryId: string) => {
+    try {
+        const result = await getGalleryByGalleryId(galleryId);
+
+        if (!result.success) {
+            return {
+                message: result.message || "Failed to fetch gallery!",
+                success: false
+            };
+        };
+
+        return {
+            message: result.message || "Gallery fetched successfully!",
+            result: result.result,
+            success: true
+        };
+
+    } catch (err: Error | any) {
+        return {
+            message: err.message || "Failed to fetch gallery!",
             success: false
         };
     };
@@ -133,9 +159,9 @@ export const handleUploadCoverPhotoById = async (galleryId: string, data: FormDa
 };
 
 // Handle Upload Photo By ID
-export const handleUploadPhotoById = async (galleryId: string, data: FormData) => {
+export const handleUploadGalleryPhotoById = async (galleryId: string, data: FormData) => {
     try {
-        const result = await uploadPhotoById(galleryId, data);
+        const result = await uploadGalleryPhotoById(galleryId, data);
 
         if (!result.success) {
             return {

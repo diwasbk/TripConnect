@@ -143,7 +143,7 @@ class PaymentController {
     // Initialize eSewa Payment
     initializeEsewaPayment = async (req: Request, res: Response) => {
         try {
-            const paymentExist = await PaymentModel.findOne({ _id: req.params.paymentId }).populate("packageId");
+            const paymentExist = await PaymentModel.findOne({ _id: req.params.paymentId }).populate("packageId", "slug").populate("bookingId", "bookingReference");
 
             if (!paymentExist) {
                 return res.status(404).send({
@@ -160,6 +160,9 @@ class PaymentController {
             const message = `total_amount=${total_amount},transaction_uuid=${transaction_uuid},product_code=${PRODUCT_CODE}`;
             const signature = crypto.createHmac("sha256", PAYMENT_SECRET_KEY).update(message).digest("base64");
 
+            // Use different payment success URL path for logged-in users and guest users
+            const bookingPath = req.user ? "user/packages" : "packages";
+
             return res.status(201).send({
                 message: "eSsewa payment initialized successfully!",
                 result: {
@@ -168,8 +171,8 @@ class PaymentController {
                     total_amount: total_amount,
                     transaction_uuid: transaction_uuid,
                     product_code: PRODUCT_CODE,
-                    success_url: `${CLIENT_URL}/packages/${(paymentExist.packageId as any).slug}/booking/payment/success`,
-                    failure_url: `${CLIENT_URL}/packages/${(paymentExist.packageId as any).slug}/booking/payment/failure`,
+                    success_url: `${CLIENT_URL}/${bookingPath}/${(paymentExist.packageId as any).slug}/booking/payment/success/${(paymentExist.bookingId as any).bookingReference}`,
+                    failure_url: `${CLIENT_URL}/${bookingPath}/${(paymentExist.packageId as any).slug}/booking/payment/failure`,
                     signature: signature
                 },
                 success: true
@@ -212,16 +215,21 @@ class PaymentController {
             };
 
             if (decodedData.status === "COMPLETE") {
-                if (paymentExist.paymentStatus !== "completed") {
-                    await PackageModel.findByIdAndUpdate(
-                        paymentExist.packageId,
-                        { $inc: { totalBookings: 1 } }
-                    );
+                if (paymentExist.paymentStatus === "completed") {
+                    return res.status(200).send({
+                        message: "Payment already verified",
+                        success: true,
+                    });
                 };
 
                 paymentExist.paymentStatus = "completed";
                 paymentExist.transactionCode = decodedData.transaction_code
                 await paymentExist.save();
+
+                await PackageModel.findByIdAndUpdate(
+                    paymentExist.packageId,
+                    { $inc: { totalBookings: 1 } }
+                );
 
                 const promoCodeExist = paymentExist.promoCodeId ? await paymentExist.populate("promoCodeId") : null;
 

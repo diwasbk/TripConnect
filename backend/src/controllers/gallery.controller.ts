@@ -31,6 +31,33 @@ class GalleryController {
         };
     };
 
+    // Get Gallery By ID
+    getGalleryByGalleryId = async (req: Request, res: Response) => {
+        try {
+            const galleryExist = await GalleryModel.findOne({ _id: req.params.galleryId });
+
+            if (!galleryExist) {
+                return res.status(404).send({
+                    message: "Gallery not found!",
+                    success: false
+                });
+            };
+
+            res.status(200).send({
+                message: "Gallery fetched successfully!",
+                result: galleryExist,
+                success: true
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            res.status(500).send({
+                message: err.message ? `Internal server error: ${err.message}` : "Internal server error.",
+                success: false
+            });
+        };
+    };
+
     // Get Gallery By Slug
     getGalleryBySlug = async (req: Request, res: Response) => {
         try {
@@ -225,7 +252,7 @@ class GalleryController {
 
             if (!galleryExist) {
                 return res.status(404).send({
-                    mesage: "Gallery not found!",
+                    message: "Gallery not found!",
                     success: false
                 });
             };

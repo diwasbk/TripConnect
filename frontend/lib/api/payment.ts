@@ -40,7 +40,7 @@ export const updatePaymentStatusById = async (paymentId: string, paymentStatus: 
 // Initialize Esewa Payment By ID
 export const initializeEsewaPaymentById = async (paymentId: string) => {
     try {
-        const response = await axiosInstance.post(API.PAYMENT.INITIALIZE_ESEWA_BY_ID(paymentId));
+        const response = await axiosInstance.get(API.PAYMENT.INITIALIZE_ESEWA_BY_ID(paymentId));
 
         return response.data;
 

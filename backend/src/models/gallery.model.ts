@@ -31,7 +31,7 @@ const gallerySchema: Schema = new mongoose.Schema<galleryType>({
         type: Boolean,
         default: true
     }
-});
+}, { timestamps: true });
 
 export interface IGallery extends galleryType, Document {
     _id: mongoose.Types.ObjectId,

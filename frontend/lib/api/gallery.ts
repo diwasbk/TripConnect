@@ -3,14 +3,26 @@ import axiosInstance from "./axios";
 import API from "./endpoint";
 
 // Create Gallery
-export const createGallery = async () => {
+export const createGallery = async (data: galleryType) => {
     try {
-        const response = await axiosInstance.post(API.GALLERY.CREATE);
+        const response = await axiosInstance.post(API.GALLERY.CREATE, data);
 
         return response.data;
 
     } catch (err: Error | any) {
         throw new Error(err.response?.data?.message || err.response || "Failed to create gallery!");
+    };
+};
+
+// Get Gallery By GalleryId
+export const getGalleryByGalleryId = async (galleryId: string) => {
+    try {
+        const response = await axiosInstance.get(API.GALLERY.GET_BY_ID(galleryId));
+
+        return response.data;
+
+    } catch (err: Error | any) {
+        throw new Error(err.response?.data?.message || err.response || "Failed to fetch gallery!");
     };
 };
 
@@ -53,7 +65,14 @@ export const updateGalleryInfoById = async (galleryId: string, data: galleryType
 // Upload Cover Photo By ID
 export const uploadCoverPhotoById = async (galleryId: string, data: FormData) => {
     try {
-        const response = await axiosInstance.patch(API.GALLERY.UPLOAD_COVER_PHOTO_BY_ID(galleryId), data);
+        const response = await axiosInstance.patch(API.GALLERY.UPLOAD_COVER_PHOTO_BY_ID(galleryId), data,
+            {
+                headers: {
+                    // Let Axios handle multipart boundaries automatically
+                    "Content-Type": "multipart/form-data"
+                }
+            }
+        );
 
         return response.data;
 
@@ -63,9 +82,16 @@ export const uploadCoverPhotoById = async (galleryId: string, data: FormData) =>
 };
 
 // Upload Photo By ID
-export const uploadPhotoById = async (galleryId: string, data: FormData) => {
+export const uploadGalleryPhotoById = async (galleryId: string, data: FormData) => {
     try {
-        const response = await axiosInstance.patch(API.GALLERY.UPLOAD_PHOTO_BY_ID(galleryId), data);
+        const response = await axiosInstance.patch(API.GALLERY.UPLOAD_PHOTO_BY_ID(galleryId), data,
+            {
+                headers: {
+                    // Let Axios handle multipart boundaries automatically
+                    "Content-Type": "multipart/form-data"
+                }
+            }
+        );
 
         return response.data;
 

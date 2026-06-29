@@ -41,7 +41,7 @@ class PackageController {
     // Get All Packages
     getAllPackagesByStatus = async (req: Request, res: Response) => {
         try {
-            const { status } = req.query;
+            const status = req.params.status;
 
             if (status !== "draft" && status !== "published") {
                 return res.status(400).send({

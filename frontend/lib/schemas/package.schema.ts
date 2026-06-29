@@ -96,8 +96,8 @@ export const photoUploadSchema = z.object({
     myfile: z
         .instanceof(File, { message: "Please select an image to upload." })
         .refine(
-            (file) => ["image/jpeg", "image/png", "image/jpg"].includes(file.type),
-            "We only support .jpg, .jpeg, and .png formats."
+            (file) => ["image/jpeg", "image/png", "image/jpg", "image/webp"].includes(file.type),
+            "We only support .jpg, .jpeg, and .png .webp formats."
         )
         .refine(
             (file) => file.size <= 1 * 1024 * 1024,

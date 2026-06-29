@@ -8,7 +8,8 @@ const galleryRouter = express.Router();
 const galleryController = new GalleryController();
 
 galleryRouter.post("/create", schemaValidateMiddleware(gallerySchema.pick({ title: true, caption: true })), galleryController.createGallery);
-galleryRouter.get("/:slug", galleryController.getGalleryBySlug);
+galleryRouter.get("/:galleryId", galleryController.getGalleryByGalleryId);
+galleryRouter.get("/slug/:slug", galleryController.getGalleryBySlug);
 galleryRouter.get("/all/:isActive", galleryController.getAllGalleriesByStatus);
 galleryRouter.put("/update-info/:galleryId", schemaValidateMiddleware(gallerySchema.partial()), galleryController.updateGalleryInfoByGalleryId);
 galleryRouter.patch("/upload-cover-photo/:galleryId", upload.single("myfile"), galleryController.uploadGalleryCoverPhotoByGalleryId);
