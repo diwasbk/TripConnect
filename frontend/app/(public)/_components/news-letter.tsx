@@ -50,6 +50,7 @@ export default function NewsLetterSection() {
                 />
                 <button
                     type="submit"
+                    disabled={isSubmitting}
                     className={`rounded-full bg-emerald-700 px-8 py-3 text-sm font-semibold text-white transition-all duration-300 ${isSubmitting ? "opacity-50" : "cursor-pointer hover:-translate-y-0.5 hover:bg-emerald-800"}`}
                 >
                     {isSubmitting ? "Subscribing..." : "Subscribe"}

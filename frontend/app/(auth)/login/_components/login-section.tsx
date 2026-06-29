@@ -1,5 +1,6 @@
 "use client";
 import { handleLogin } from "@/lib/actions/auth-action";
+import { getDecodedTokenFromCookie } from "@/lib/cookie";
 import { loginSchema, loginType } from "@/lib/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -28,9 +29,20 @@ export default function LoginSection() {
                 throw new Error(res.message || "Login failed!");
             };
 
-            toast.success(res.message || "Login successful!");
+            // Decoding after successful login (cookie is now set)
+            const decoded = await getDecodedTokenFromCookie();
+            switch (decoded.role) {
+                case "admin":
+                    router.replace("/admin/dashboard");
+                    break;
+                case "user":
+                    router.replace("/user/my-trips");
+                    break;
+                default:
+                    router.replace("/");
+            };
 
-            router.push("/user/my-trips");
+            toast.success(res.message || "Login successful!");
 
         } catch (err: any) {
             toast.error(err.message || "Login failed!");

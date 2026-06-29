@@ -236,6 +236,9 @@ class PaymentController {
                 const bookingExist = await BookingModel.findById(paymentExist.bookingId).populate("packageId");
 
                 if (bookingExist) {
+                    bookingExist.status = "confirmed"
+                    await bookingExist.save();
+
                     const packageData = bookingExist.packageId as any;
                     const promoCodeData = promoCodeExist?.promoCodeId as any;
 
@@ -259,11 +262,7 @@ class PaymentController {
                         paymentStatus: paymentExist.paymentStatus
                     };
 
-                    await sendEmail(
-                        bookingExist.email,
-                        "Your tour has been confirmed - TripConnect",
-                        generateBookingDetailEmail(bookingEmailData)
-                    );
+                    await sendEmail(bookingExist.email,"Your tour has been confirmed - TripConnect",generateBookingDetailEmail(bookingEmailData));
                 };
 
                 return res.status(200).send({

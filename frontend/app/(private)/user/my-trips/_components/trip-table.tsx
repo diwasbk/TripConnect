@@ -196,8 +196,12 @@ export default function TripTable() {
                                             <tr key={booking._id} className="hover:bg-emerald-50/20 transition-colors duration-200">
                                                 <td className="px-5 py-4">
                                                     <div className="flex items-center gap-3">
-                                                        <div className={`w-11 h-9 rounded-full flex items-center justify-center border text-xs font-bold ${AVATAR_COLORS[idx % AVATAR_COLORS.length]}`}>
-                                                            {booking.fullName?.charAt(0).toUpperCase() || "U"}
+                                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border text-xs font-bold ${AVATAR_COLORS[idx % AVATAR_COLORS.length]}`}>
+                                                            {booking.fullName
+                                                                ?.split(" ")
+                                                                .map((name: any) => name.charAt(0).toUpperCase())
+                                                                .join("")
+                                                                .slice(0, 2) || "U"}
                                                         </div>
                                                         <div>
                                                             <p className="text-sm font-black text-slate-950 truncate">{booking.fullName}</p>

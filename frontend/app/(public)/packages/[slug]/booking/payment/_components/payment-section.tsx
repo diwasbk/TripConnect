@@ -3,15 +3,15 @@ import { handleGetBookingByBookingReference } from "@/lib/actions/booking-action
 import { handleApplyPromoCodeByPaymentId } from "@/lib/actions/promocode-action";
 import { initializeEsewaPaymentById } from "@/lib/api/payment";
 import { redirectEsewa } from "@/lib/payment/redirect-esewa";
-import { promoCodeSchema, promoCodeType } from "@/lib/schemas/promocode.schema";
+import { applyPromoCodeSchema, applyPromoCodeType } from "@/lib/schemas/promocode.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {  useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiCheckCircle } from "react-icons/fi";
 import { toast } from "react-toastify";
 
-export default function PaymentSection({ navUrl }: { navUrl: string }) {
+export default function PaymentSection() {
     const searchParams = useSearchParams();
     const bookingReference = searchParams.get("bookingReference") as string;
 
@@ -45,9 +45,9 @@ export default function PaymentSection({ navUrl }: { navUrl: string }) {
         handleSubmit,
         reset,
         formState: { errors, isSubmitting }
-    } = useForm<promoCodeType>({ resolver: zodResolver(promoCodeSchema) });
+    } = useForm<applyPromoCodeType>({ resolver: zodResolver(applyPromoCodeSchema) });
 
-    const onSubmit = async (data: promoCodeType) => {
+    const onSubmit = async (data: applyPromoCodeType) => {
         try {
             const res = await handleApplyPromoCodeByPaymentId(bookingDetail?.paymentId, data);
 

@@ -340,7 +340,7 @@ export const generateBookingDetailEmail = (bookingData: any) => `
 
                           <!-- Right column -->
                           <td valign="top" style="padding-left:10px; width:50%;">
-                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Phone:</strong> ${bookingData?.phone || "N/A"}</p>
+                            <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Phone:</strong> ${bookingData?.phoneNumber || "N/A"}</p>
                             <p style="margin:6px 0; font-size:14px; color:#475569;"><strong>Special Request:</strong> ${bookingData?.specialRequest || "N/A"}</p>
                           </td>
                         </tr>

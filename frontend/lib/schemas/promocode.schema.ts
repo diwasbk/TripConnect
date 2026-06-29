@@ -29,4 +29,4 @@ export const applyPromoCodeSchema = z.object({
         .toUpperCase()
         .trim()
 });
-export type applyPromoCodeType = z.infer<typeof promoCodeSchema>;
+export type applyPromoCodeType = z.infer<typeof applyPromoCodeSchema>;
