@@ -11,6 +11,7 @@ import cors from "cors";
 import subscriberRouter from "./routes/subscriber.route";
 import { CLIENT_URL } from "./config/config";
 import summaryRouter from "./routes/summary.route";
+import reviewRouter from "./routes/review.route";
 
 const app: Application = express();
 
@@ -33,5 +34,6 @@ app.use("/api/inquiry", inquiryRouter);
 app.use("/api/gallery", galleryRouter);
 app.use("/api/subscriber", subscriberRouter);
 app.use("/api/summary", summaryRouter);
+app.use("/api/review", reviewRouter);
 
 export default app;
