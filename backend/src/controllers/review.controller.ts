@@ -107,9 +107,7 @@ class ReviewController {
 
             const total = await ReviewModel.countDocuments({});
 
-            const result = await ReviewModel.find().skip((page - 1) * limit).limit(limit);;
-
-            await ReviewModel.findOneAndDelete({ reviewId: req.params.reviewId });
+            const result = await ReviewModel.find().populate("userId", "fullName").skip((page - 1) * limit).limit(limit);;
 
             res.status(200).json({
                 message: result.length ? "Review fetched successfully" : "Review not found",
