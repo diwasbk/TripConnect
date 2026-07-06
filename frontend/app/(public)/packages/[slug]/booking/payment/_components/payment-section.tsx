@@ -5,13 +5,15 @@ import { initializeEsewaPaymentById } from "@/lib/api/payment";
 import { redirectEsewa } from "@/lib/payment/redirect-esewa";
 import { applyPromoCodeSchema, applyPromoCodeType } from "@/lib/schemas/promocode.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiCheckCircle } from "react-icons/fi";
 import { toast } from "react-toastify";
 
 export default function PaymentSection() {
+    const router = useRouter();
+    
     const searchParams = useSearchParams();
     const bookingReference = searchParams.get("bookingReference") as string;
 
@@ -100,6 +102,20 @@ export default function PaymentSection() {
         <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <section className="overflow-hidden rounded-3xl border border-emerald-100 bg-white shadow-[0_14px_40px_rgba(15,122,75,0.06)]">
                 <div className="px-4 py-4 sm:px-5 sm:py-5">
+
+                    <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                <button
+                    onClick={() => { router.back() }}
+                    className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm shadow-emerald-950/5 backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-50 cursor-pointer"
+                >
+                    <span>←</span>
+                    <span>Back</span>
+                </button>
+                <p className="rounded-full border border-emerald-100 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700 shadow-sm shadow-emerald-950/5">
+                    Booking step 2 of 3
+                </p>
+            </div>
+
                     <div className="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-3 shadow-sm shadow-emerald-950/5">
                         <div className="flex items-center gap-3">
                             <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-white shadow-lg shadow-emerald-700/20">

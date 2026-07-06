@@ -1,5 +1,6 @@
 import Link from "next/link";
 import NewsLetterSection from "./news-letter";
+import { Backpack } from "lucide-react";
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
@@ -45,9 +46,9 @@ export default function Footer() {
             <div className="mx-auto flex w-full flex-col gap-12 px-4 py-14 lg:flex-row lg:items-start lg:justify-between lg:px-8">
                 <div className="lg:max-w-md">
                     <Link href="/" className="group mb-6 inline-flex items-center gap-3">
-                        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-700 text-sm font-black text-white shadow-lg shadow-emerald-700/25 transition-transform duration-300 group-hover:-translate-y-0.5">
-                            TC
-                        </span>
+                        <div className="rounded-lg bg-emerald-600 p-2 text-white sm:rounded-xl sm:p-2.5 shadow-sm flex-shrink-0">
+                            <Backpack size={20} className="sm:size-5" />
+                        </div>
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-700">TripConnect</p>
                             <p className="text-xs text-slate-600">Travel Booking</p>

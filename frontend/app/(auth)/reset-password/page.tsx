@@ -1,6 +1,6 @@
 import NavBar from "@/app/(public)/_components/navbar";
 import ResetPasswordSection from "./_components/reset-password-section";
-import { Footer } from "react-day-picker";
+import Footer from "@/app/(public)/_components/footer";
 
 export default function HomePage() {
     return (

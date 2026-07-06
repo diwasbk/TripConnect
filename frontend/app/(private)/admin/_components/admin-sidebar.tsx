@@ -89,6 +89,11 @@ export default function AdminSideBar() {
                     icon: <Tag size={20} />,
                     path: "/admin/promocodes",
                 },
+                {
+                    label: "Reviews",
+                    icon: <MessageSquare size={20} />,
+                    path: "/admin/reviews",
+                },
             ],
         },
 

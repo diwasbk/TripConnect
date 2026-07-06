@@ -121,7 +121,7 @@ export default function BookingSection({ navUrl }: { navUrl: string }) {
                     <span>Back</span>
                 </button>
                 <p className="rounded-full border border-emerald-100 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700 shadow-sm shadow-emerald-950/5">
-                    Booking step 1 of 2
+                    Booking step 1 of 3
                 </p>
             </div>
 
