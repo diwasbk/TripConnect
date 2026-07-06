@@ -97,6 +97,14 @@ const API = {
         DASHBOARD: "/summary/dashboard",
         PACKAGE: "/summary/package",
         BOOKING: "/summary/booking"
+    },
+    REVIEW: {
+        GET_ALL: (page: number, limit: number) => `/review/all?page=${page}&limit=${limit}`,
+        GET_ALL_BY_PACKAGE_ID: (packageId: string, page: number, limit: number) => `/review/all/${packageId}?page=${page}&limit=${limit}`,
+        GET_AEVRAGE_RATING_BY_PACKAGE_ID: (packageId: string) => `/review/average-rating/${packageId}`,
+        GIVE_REVIEW_BY_PACKAGE_ID: (packageId: string) => `/review/give-review/${packageId}`,
+        GIVE_RATING_BY_PACKAGE_ID: (packageId: string) => `/review/give-rating/${packageId}`,
+        DELETE_BY_ID: (reviewId: string) => `/review/delete/${reviewId}`,
     }
 };
 
