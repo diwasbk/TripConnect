@@ -2,6 +2,8 @@
 import { API_BASE_URL } from "@/lib/config";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ReviewForm } from "../../_components/review-form";
+import ReviewSection from "../../_components/review-section";
 
 export default function PackageDetailSection({ navUrl, pkg }: { navUrl: string, pkg: any }) {
     const router = useRouter();
@@ -138,6 +140,17 @@ export default function PackageDetailSection({ navUrl, pkg }: { navUrl: string, 
                     </Link>
                 </div>
             </div>
+            {/* Add this check instead of rendering directly */}
+            {pkg?._id ? (
+                <>
+                    <ReviewSection packageId={pkg._id} />
+                    <ReviewForm packageId={pkg._id} />
+                </>
+            ) : (
+                <div className="mt-16 flex justify-center py-10">
+                    <p className="text-slate-400">Loading reviews...</p>
+                </div>
+            )}
         </section>
     );
 }

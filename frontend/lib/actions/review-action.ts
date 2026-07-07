@@ -79,7 +79,7 @@ export const handleGetAllReviews = async (page: number = 1, limit: number = 5) =
 };
 
 // Handle Get All Reviews By Package ID
-export const handleGetAllReviewsByPackageId = async (packageId: string, page: number = 1, limit: number = 5) => {
+export const handleGetAllReviewsByPackageId = async (packageId: string, page: number = 1, limit: number = 3) => {
     try {
         const result = await getAllReviewsByPackageId(packageId, page, limit);
 
@@ -93,6 +93,7 @@ export const handleGetAllReviewsByPackageId = async (packageId: string, page: nu
         return {
             message: result.message || "Review fetched successfully",
             result: result.result,
+            pagination: result.pagination,
             success: true
         };
 
