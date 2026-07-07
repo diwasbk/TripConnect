@@ -11,7 +11,7 @@ export const reviewSchema = z.object({
     review: z
         .string("Review is required.")
         .nonempty("Review is required.")
-        .max(100, "Review cannot exceed 100 characters.")
+        .max(500, "Review cannot exceed 500 characters.")
 });
 
 export type reviewType = z.infer<typeof reviewSchema>;
