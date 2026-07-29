@@ -170,7 +170,7 @@ export default function PaymentTable() {
                                         <div className="flex flex-col">
                                             <p className="font-semibold">NPR {p.discountAmount || 0}</p>
                                             <span className="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded w-max mt-1 font-bold">
-                                                {p.promoCodeId.code || "N/A"}
+                                                {p.promoCodeId?.code || "N/A"}
                                             </span>
                                             <span className="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded w-max mt-1 font-bold">
                                                 {`${p.discountPercentage}${"%"} ` || "0%"}
