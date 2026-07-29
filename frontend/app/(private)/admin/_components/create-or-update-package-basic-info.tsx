@@ -106,14 +106,14 @@ export default function CreateOrUpdatePackageBasicInfoSection() {
             let res;
 
             if (packageId) {
-                // f packageId exists, call the Update API
+                // If packageId exists, call the Update API
                 res = await handleUpdatePackageBasicInfoById(packageId, data);
 
                 if (!res.success) {
                     throw new Error(res.message || "Failed to update package basic info!");
                 };
 
-                router.push(`/admin/packages/update/details?packageId=${packageId}`);
+                router.back();
 
             } else {
                 // Otherwise, call the Create API
@@ -123,7 +123,7 @@ export default function CreateOrUpdatePackageBasicInfoSection() {
                     throw new Error(res.message || "Failed to save package!");
                 };
 
-                router.push(`/admin/packages/add-details?packageId=${res.result._id}`);
+                router.push("/admin/packages/draft");
             };
 
             toast.success(res.message || `Package ${packageId ? "updated" : "created"} successfully!`);

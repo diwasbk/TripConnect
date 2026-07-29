@@ -2,14 +2,7 @@
 import { useEffect, useState } from "react";
 import { Search, Rocket, Power, X, Edit, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
-import {
-    handleActivateORdeactivatePackageById,
-    handleGetLivePackages,
-    handleGetPackagesByActiveStatus,
-    handleGetPackagesByStatus,
-    handlePublishPackageByPackageId,
-    handleDeletePackageByPackageId
-} from "@/lib/actions/package-action";
+import { handleActivateORdeactivatePackageById, handleGetLivePackages, handleGetPackagesByActiveStatus, handleGetPackagesByStatus, handlePublishPackageByPackageId, handleDeletePackageByPackageId } from "@/lib/actions/package-action";
 import { API_BASE_URL } from "@/lib/config";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -23,7 +16,7 @@ const PACKAGE_STATUS: Record<string, string> = {
 interface PendingUpdate {
     id: string;
     isActive: boolean;
-}
+};
 
 export default function PackageTable({ live, status, isActive }: { live?: string, status?: string, isActive?: boolean }) {
     const router = useRouter();
@@ -135,7 +128,7 @@ export default function PackageTable({ live, status, isActive }: { live?: string
             if (res.success) {
                 setPackages(prev => prev.filter(pkg => pkg._id !== id));
                 toast.success(`Package ${isActive ? "activated" : "deactivated"} successfully`);
-                
+
                 router.push("/admin/packages/live");
             } else {
                 throw new Error(res.message || "Failed to update active status!");
@@ -348,8 +341,8 @@ export default function PackageTable({ live, status, isActive }: { live?: string
                             onClick={() => setCurrentPage(prev => prev - 1)}
                             disabled={!pagination.hasPreviousPage || loading}
                             className={`rounded-full border px-3 py-2 sm:px-4 text-xs sm:text-sm font-semibold transition-colors ${!pagination.hasPreviousPage || loading
-                                    ? "pointer-events-none border-emerald-200 bg-white text-slate-400"
-                                    : "border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 cursor-pointer"
+                                ? "pointer-events-none border-emerald-200 bg-white text-slate-400"
+                                : "border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 cursor-pointer"
                                 }`}
                         >
                             Previous
@@ -361,8 +354,8 @@ export default function PackageTable({ live, status, isActive }: { live?: string
                             onClick={() => setCurrentPage(prev => prev + 1)}
                             disabled={!pagination.hasNextPage || loading}
                             className={`rounded-full border px-3 py-2 sm:px-4 text-xs sm:text-sm font-semibold transition-colors ${!pagination.hasNextPage || loading
-                                    ? "pointer-events-none border-emerald-200 bg-white text-slate-400"
-                                    : "border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 cursor-pointer"
+                                ? "pointer-events-none border-emerald-200 bg-white text-slate-400"
+                                : "border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50 cursor-pointer"
                                 }`}
                         >
                             Next
